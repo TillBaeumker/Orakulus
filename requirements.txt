@@ -1,8 +1,8 @@
-streamlit
-python-dotenv
-langchain
-langchain-openai
-langchain-community
-neo4j
-open
-pillow
+streamlit==1.40.1
+python-dotenv==1.0.1
+langchain==0.3.7
+langchain-openai==0.2.8
+langchain-community==0.3.7
+neo4j==5.26.0
+Pillow>=9.0.0
+
