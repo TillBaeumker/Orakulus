@@ -2,5 +2,5 @@ streamlit==1.26.0
 python-dotenv==1.0.0
 langchain==0.0.268
 openai==0.27.4
-neo4j==5.10.0
+neo4j==4.4.12
 Pillow==9.3.0
