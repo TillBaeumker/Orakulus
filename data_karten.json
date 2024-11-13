@@ -1,0 +1,244 @@
+{
+  "kartenlosbuch": [
+    {
+      "symbol": "Herz-König",
+      "weissagung": "Ich bin der Konig von Hertzen feyn\nund sag dir auff die trew meyn:\nDas du glaubest was man dir sait,\ndas machet dein eynfeltigkait.\nNicht laß dich gantz an die wort,\ndie man dir sagt hie und dort.\nGegen dir redt man gar freuntlich,\naber e[r] meynt dir es felschlich.",
+      "image_path": "extracted_images/Herz-König.png"
+    },
+    {
+      "symbol": "Herz-Ober",
+      "weissagung": "Oberman von Hertz byn ich genant\nund setz dir inn deine hant\ndas hertz dir das bedeutet,\ndas dir dein lieb treutet,\nund mag dir nicht feynd seyn,\ndein aller liebstes buleyn.\nDu solt dantzen und springen\nund darzu frolich syngen.",
+      "image_path": "extracted_images/Herz-Ober.png"
+    },
+    {
+      "symbol": "Herz-Unter",
+      "weissagung": "Ich bin der Underknab von Herzten,\nmeyn gedenck sag ich on schertzen:\nIch sag dir es furwor,\ndas du bist eyn rechter thor,\nwann du den wurffel treibest,\ndarumb du on pfennig beleibest.\nLiessest du es underwegen,\nee du deine augen darumb must geben.",
+      "image_path": "extracted_images/Herz-Unter.png"
+    },
+    {
+      "symbol": "Herz-Banner",
+      "weissagung": "Ich bin das Baner von Hertzlein\nund sag dir auff die trewe mein\nund sag dir nit mer, dan das:\nDu thust nit gern manig uberlas.\nDu meynst freuntschafft zu gewynnen,\ndas gesch[i]cht, wan ein esel lernt syden spynnen.\nIch will dir nit sagen weder boß noch gut,\nwann du tregst eyn hochfertigen mut.",
+      "image_path": "extracted_images/Herz-Banner.png"
+    },
+    {
+      "symbol": "Herz-9",
+      "weissagung": "Neun Hertz sagen dir furwar also,\ndas du schier solt werden in freuden fro\nmit dem liebsten bulen dein.\nDer thut dir seyner lieb schein,\nwan dein hertz ist trew vol\nund mag es verdienen wol\nmit zuchten, das man dein gert\nvon deynem lieb wirst du gewert.",
+      "image_path": "extracted_images/Herz-9.png"
+    },
+    {
+      "symbol": "Herz-8",
+      "weissagung": "Ich will dir fur warheyt sagen:\nDu solt grabe klaider antragen,\nwan du gar ellend bist.\nUmb dich gibt man nit eyn fist.\nMan sicht dich dick, als ich verstan,\nschmelich uber die achssel an.\nDoch bist du verklaget gar,\ndas du es nit nympst war.",
+      "image_path": "extracted_images/Herz-8.png"
+    },
+    {
+      "symbol": "Herz-7",
+      "weissagung": "„Syben seynd dir gemeyn,\nsye seyent groß oder kleyn,\nes seynd tochter oder knaben.“\nDer sol sie wol gehaben.\nUnd laß [d]ich nit verlangen:\n[Du wirst] lieblich umbfangen\nvon seynem lieb in kurtzer stund\nund wirt gekust an [d]einen mund.",
+      "image_path": "extracted_images/Herz-7.png"
+    },
+    {
+      "symbol": "Herz-6",
+      "weissagung": "Den bulen den du hast erkoren,\nda ist dein arbeyt an verloren.\nWie freuntlich er gegen dir thut,\neyn ander gibt ym hohern mut.\nDarumb laß ab, das will ich dir sagen,\ndu kompst sein sunst zu grossem schaden.\nUnd ker ab die gebunden synd\nmit der ee und von geystlichem kynd.",
+      "image_path": "extracted_images/Herz-6.png"
+    },
+    {
+      "symbol": "Herz-5",
+      "weissagung": "Ich sag dir und thu das kundt:\nDir widerfert in kurzter stundt\neyn ding des du dich frewest\nund mit augen des nach schawest\nschier de[m] liebsten bulen deyn.\nDer thut dir seiner freuntschaft schein\nund thut das billich,\nwan du bist im allezeit willich.",
+      "image_path": "extracted_images/Herz-5.png"
+    },
+    {
+      "symbol": "Herz-4",
+      "weissagung": "Du solt mir furwar glauben:\ndu wilt dich selber berauben\nlieb, freuntschafft und trewe.\nSehe, das es dich nit gerewe,\nwan auff das du nicht achst,\nwo du lieb verkeren machst.\nWilt du aber, das dir geling,\nso must du haben vil pfenning.",
+      "image_path": "extracted_images/Herz-4.png"
+    },
+    {
+      "symbol": "Herz-3",
+      "weissagung": "Der fenix nicht anders lebt,\nwan des feuers, darum er strebt:\ndein gemut in lieb darinne.\nFraw Venus, die schon koniginne,\ndie will dir beystand than,\nwan du hast es recht griffen an\nmit hertzen und mit synnen\nund magst wol daran gewynnen.",
+      "image_path": "extracted_images/Herz-3.png"
+    },
+    {
+      "symbol": "Herz-2",
+      "weissagung": "Ich will dir furwar sagen:\nDu wirst bald schwartz antragen.\nDas wirt von leyd geschehen,\ndu wollest es dan in der zeyt versehen.\nSunst muß ellend dich bestan,\nwan dein lieb will dir abgan.\nUnd ich gan dir sein wol,\nwan dein hertz ist untrew vol.",
+      "image_path": "extracted_images/Herz-2.png"
+    },
+    {
+      "symbol": "Schellen-König",
+      "weissagung": "Ich bin der Konig von Schellen,\nes wirt dich gerewen selden\nWann wilt du mit trewen leben,\nso will ich dir gantz geben\neyn bulen an deyn hant,\nd[em] deyn lieb wirt wol bekannt.\nWilt du anders das erlan,\ndavon du nit eren magst han.",
+      "image_path": "extracted_images/Schellen-König.png"
+    },
+    {
+      "symbol": "Schellen-Ober",
+      "weissagung": "Wer gern ere woll habe,\nder thu sich dein gantz abe.\nWann du bist fro und gemaidt,\nso man von deyner boßheyt saidt.\nUnd das wol verschwiegen were,\ndas bringst du selber zu mere\nund schonest nyemant daran.\nDarumb sol sich nyemant an dich lan.",
+      "image_path": "extracted_images/Schellen-Ober.png"
+    },
+    {
+      "symbol": "Schellen-Unter",
+      "weissagung": "Wer dich lieb hat, der darff nit klagen.\nDu magst wol blawe klaider tragen,\nwann auff rechte stetigkeyt\nhast du gantz deyn synn geleyt.\nUnd deyn hertz ist stetigkeyt vol,\ndarumb ich dich loben sol.\nBehalt die in guter hut,\nsye bringt dir nichts dan eytel gut.",
+      "image_path": "extracted_images/Schellen-Unter.png"
+    },
+    {
+      "symbol": "Schellen-Banner",
+      "weissagung": "Dich dunckt in deynem hertzen,\ndu kundest in lieb wol schertzen,\nund yederman auch dein weise\nwolgefall und d[ich] [p]reise.\nAleyn, zwar, du bist daran geletzt:\nDu wirst fur eyn narren geschetzt.\nDie thorheyt thust du volbringen,\ndarumb bist du nit wol bey synnen.",
+      "image_path": "extracted_images/Schellen-Banner.png"
+    },
+    {
+      "symbol": "Schellen-9",
+      "weissagung": "Ich bin die Neun Schellen\nund will dir wol erhellen.\nAuch glaub mir on zil:\nIch sag dir auch freuden vil.\nDas du darzu solt frolich seyn,\nwann dich hat lieb der bule dein\nmit trew und stetigkeyt,\nmeer dann es dir zuseyt.",
+      "image_path": "extracted_images/Schellen-9.png"
+    },
+    {
+      "symbol": "Schellen-8",
+      "weissagung": "Ich will dir sagen sicherlich:\nnit zorne, des bitt ich dich,\ndarumb du ellend bist.\nDas machet dein falscher list,\ndas du die leut wilt betriegen,\nund mit vil worten thust du liegen\nund hast auch keyn rechte trew nicht.\nEs ist schade, das dir guts geschicht.",
+      "image_path": "extracted_images/Schellen-8.png"
+    },
+    {
+      "symbol": "Schellen-7",
+      "weissagung": "Ich bin ein brieff und ein bot genant,\nvon fraw Venus dorther gesant.\nFraw Venus mit irer mynnen\ndich schier lieb wirt gewynnen.\nDas dir mit steter lieb wonet bey,\nwan dein hertz ist steter lieb frey.\nDas hab ich an deiner geberd gesehen.\nDas du begerst, das sol geschehen.",
+      "image_path": "extracted_images/Schellen-7.png"
+    },
+    {
+      "symbol": "Schellen-6",
+      "weissagung": "Du meinst, du hast dein bulen allein.\nNein, zwar, man hat mit dir gemein.\nSo du kommest vornen herauß,\nso kompt ein ander hynden in das hauß.\nSo wirstu in die augen gestochen,\ndie trew wirt an dir gebrochen.\nDarumb soltu von im abkeren\nund spar es zu bessern eren.",
+      "image_path": "extracted_images/Schellen-6.png"
+    },
+    {
+      "symbol": "Schellen-5",
+      "weissagung": "Frewd sag ich, was ich mag:\nGut geschicht dir nacht und tag,\nwan dein zuchtig geberd und wandel\nist susser dan der mandel.\nDein bule von hertzen\nwill gern mit dir schertzen,\nwann dein keusche mute\nnympt sie fur alles gute.",
+      "image_path": "extracted_images/Schellen-5.png"
+    },
+    {
+      "symbol": "Schellen-4",
+      "weissagung": "Keyn guts ich dir sag:\nDu hast alle deyne tag\nbeschissen werck getrieben\nund bist in die lenge nit belieben\nan keinem b[u]len mit stetigkeyt.\nDeyn hertz gar wenig trew treyt.\nDarumb sol dir [] seyn gleichs beschaffen,\ndas dich die leut fur ein toren affen.",
+      "image_path": "extracted_images/Schellen-4.png"
+    },
+    {
+      "symbol": "Schellen-3",
+      "weissagung": "Gluck tregst du billich alleyn\nvon deynem liebsten buleyn.\nDu bist im holt, er liebt auch dich\ngantz und auch gar stetiglich.\nZu dir hat er guten wan,\nwann er dir seyner lieb gan.\nBeleib bey im in gantzen trewen.\nEs wirt dich nymmer gerewen.",
+      "image_path": "extracted_images/Schellen-3.png"
+    },
+    {
+      "symbol": "Schellen-2",
+      "weissagung": "Glaub mir furware,\nich thun dir offenbare,\ndas du hast in kurtzen stunden\neynes bulen underwunden,\ndes freuntschafft sere nach dir verlangt\nan der syten da der beutel hangt,\nund der liebe mit dir spilt,\ndieweil du außgeben wilt.",
+      "image_path": "extracted_images/Schellen-2.png"
+    },
+    {
+      "symbol": "Eichel-König",
+      "weissagung": "Wir sein ein Konig von ram,\naber du bist ein boser leichnam.\nIn solicher geytzigkeit du lebst,\nee du eynen pfenning außgebst,\ndu brechest ee auß deinen besten zan,\nden du hast in deinem mund stan.\nDu solst nit in sollicher geitzigkeit leben,\noder es wirt dir ein dieb dein gut ußgeben.",
+      "image_path": "extracted_images/Eichel-König.png"
+    },
+    {
+      "symbol": "Eichel-Ober",
+      "weissagung": "Ich rat dir an dem besten:\nBleib in stetigkeyt am vesten.\nGot hat dir auch behalten,\ndas du mit eren solt alten.\nFreud und gut will er dir geben\nund uff erden langes leben.\nDarumb hab guten mut:\ndir wirt noch ere und gut.",
+      "image_path": "extracted_images/Eichel-Ober.png"
+    },
+    {
+      "symbol": "Eichel-Unter",
+      "weissagung": "Gantz uberfreudenrerich\nsag ich dir sicherleich,\ndas du gewynst ere und gut.\nDarumb solt du sein wolgemut.\nGluck ist dir beschert und geet dich an.\nGot es wol erkennen kann.\nAuch solt du hie uff erden\nnoch reich und selig werden.",
+      "image_path": "extracted_images/Eichel-Unter.png"
+    },
+    {
+      "symbol": "Eichel-Banner",
+      "weissagung": "Merck was ich dir sage:\nDu tregst heymlich klage.\nUnd ist dir anders nicht,\ndan das dein lieb an dir bricht\nund macht anderßwo im ein nest,\ndes du dann hynden nach gest.\nVolg mir und schlags uß deynem hertzen,\nsunst bringt es dir grossen schmertzen.",
+      "image_path": "extracted_images/Eichel-Banner.png"
+    },
+    {
+      "symbol": "Eichel-9",
+      "weissagung": "Es sagen dir die Neun Eycheln fein,\ndas du on alle sorg solt sein.\nGroß ere sol dir zustan,\nnach deinem willen sol es dir gan.\nUnd biß frolich und geil,\ndir widerfert noch alles heil.\nDu wirst auch noch leben vil iar.\nDarumb frew dich in freuden gar.",
+      "image_path": "extracted_images/Eichel-9.png"
+    },
+    {
+      "symbol": "Eichel-8",
+      "weissagung": "Acht Eychel sagent dir furware,\ndas das sey dein synn gare:\nDas du geren wissest frembde mere,\ndie do neulich geschehen were.\nDarumb weiß ich dich an,\ndas du solt treten auff den blan,\nzu den sacktragern eyl du bald,\nda vindestu newer mer iung und alt.",
+      "image_path": "extracted_images/Eichel-8.png"
+    },
+    {
+      "symbol": "Eichel-7",
+      "weissagung": "Nit laß dich gentzlich daran,\ndar auff du hast guten wan,\nwan du wirst daran betrogen:\nMan hat dich offt angelogen,\nund wilt doch sein nicht absein.\nDarumb kompstu in grosse pein.\nKere davon mit guten synnen,\ndu magst nit daran gewinnen.",
+      "image_path": "extracted_images/Eichel-7.png"
+    },
+    {
+      "symbol": "Eichel-6",
+      "weissagung": "Ich sag dir einen bosen gruß:\ndir wirt hungers nymmer buß.\nDu hast ein bodenlosen schlundt\nals ein hungeriger hundt.\nUnd were die [P]egn[i]tz dein\nund lieff dir zu der gurgel ein,\nso mocht sie dir nit zu trincken gnug geben.\nEs ist schade, das du uff erden solt leben.",
+      "image_path": "extracted_images/Eichel-6.png"
+    },
+    {
+      "symbol": "Eichel-5",
+      "weissagung": "Wilstu deinem bulen dienen mit fleiß,\nso trag kleider rot, grun und weiß.\nWan ich thu dir kunt,\ndas du solt haben in kurtzer stunt\nmit deinem bulen ein keplich stundelein\nund dich kussen mit seinem mundlein.\nVon im hastu freuntschafft sicherlich,\ndarumb solstu frewen dich.",
+      "image_path": "extracted_images/Eichel-5.png"
+    },
+    {
+      "symbol": "Eichel-4",
+      "weissagung": "Was sol dir die karten in der hant?\nLeg sie nider, du wirst geschant\nan leip, an gut und an eren,\ndu wollest dich dan verkeren.\nDein freud und unbekanter mut,\nder bringt dich in armut,\nauch dieff in die helle\nund wirst des teuffels geselle.",
+      "image_path": "extracted_images/Eichel-4.png"
+    },
+    {
+      "symbol": "Eichel-3",
+      "weissagung": "Ich wil dir furwar sagen,\ndas ich uber dich nit hore klagen,\nwann man gant dir vil guts,\ndarumb, das du bist getrewen muts.\nDarzu kanst du auch nit liegen,\nnoch niemant boßlich betriegen.\nDu getrawest auch iederman wol,\ndarumb dich Got reich selig machen sol.",
+      "image_path": "extracted_images/Eichel-3.png"
+    },
+    {
+      "symbol": "Eichel-2",
+      "weissagung": "Dein tummer synn dich treuget,\ndein zuversicht dir leuget.\nDas macht dein uppig gedanck,\ndarumb wirstu an eren kran[k].\nDavon volge der lere mein:\nthu dich sein ab, es mag nit sein.\nUnd vahe ein bessers an,\ndes du gewynn mogest han.",
+      "image_path": "extracted_images/Eichel-2.png"
+    },
+    {
+      "symbol": "Laub-König",
+      "weissagung": "Ich, Konig von Lauber, thu dir kundt\nund will dir sagen deynen grundt:\nDas du geren trinckest guten wein,\ndarumb must du offt in sorgen sein.\nDu hutest dich gern vor ungelimpff,\nwirstu nit truncken und triebst neuen schimpff.\nDar durch du dan wirst betrogen.\nSehe, ob ich hab gelogen.",
+      "image_path": "extracted_images/Laub-König.png"
+    },
+    {
+      "symbol": "Laub-Ober",
+      "weissagung": "Frewe dich und hab ein freyes leben:\nEre und gut wirt dir Got geben\numb dein grosse miltigkeit.\nDavon dein lob wirt gar breyt.\nLob Got und diene im wol.\nDein hertz wirt noch freuden vol.\nUnd diene im mit trewen.\nEs wirt dich nit gerewen.",
+      "image_path": "extracted_images/Laub-Ober.png"
+    },
+    {
+      "symbol": "Laub-Unter",
+      "weissagung": "Die Zehen Laub, er thun dir sagen:\nDu hast angst und not tragen,\ndarzu ungemach hast erlitten,\nleyt hat dich nit vermitten.\nDas fleuhet alles sampt von dir,\ndas solt du sicher gelauben mir.\nUnd wirt gluck bey dir stan,\nungefell wirt von dir gan.",
+      "image_path": "extracted_images/Laub-Unter.png"
+    },
+    {
+      "symbol": "Laub-Banner",
+      "weissagung": "Die Zehen Laub, er thun dir sagen:\nDu hast angst und not tragen,\ndarzu ungemach hast erlitten,\nleyt hat dich nit vermitten.\nDas fleuhet alles sampt von dir,\ndas solt du sicher gelauben mir.\nUnd wirt gluck bey dir stan,\nungefell wirt von dir gan.",
+      "image_path": "extracted_images/Laub-Banner.png"
+    },
+    {
+      "symbol": "Laub-9",
+      "weissagung": "Ich sag dir das nach:\nZu etlichem ding ist dir gach.\nEs wirt dir von hertzen leyt,\nwann du kompst sein in argkeyt.\nDas du volgest nyemantz rat,\ndarumb es dir nit baß ergat,\ndann das es dir soll mißlingen\nzu allen deinen dingen.",
+      "image_path": "extracted_images/Laub-9.png"
+    },
+    {
+      "symbol": "Laub-8",
+      "weissagung": "Die Acht Lauber, zwar,\ndie sagen dir offenbar,\ndas vil leut dir sein gram,\ndie werden gegen dich noch zam.\nZu allen zeyten lieb Got\nund leb recht nach seinem gebot,\nso mag dir nit mißlingen\nin allen dinen dingen.",
+      "image_path": "extracted_images/Laub-8.png"
+    },
+    {
+      "symbol": "Laub-7",
+      "weissagung": "Du gewinnest nicht vil gutes,\nwann du bist leichte[n] mutes\nund last mit dir auffgan,\nwas dir zunutz soll beistan.\nUnd wo man isset und trinckt,\ndarzu dein hertz allweg sinckt,\nwan du nemst ein leberwurst und guten wein\nfur alles das da mag gesein.",
+      "image_path": "extracted_images/Laub-7.png"
+    },
+    {
+      "symbol": "Laub-6",
+      "weissagung": "Dir sagen Sechs Lauber zu aller frist,\ndas du ein geitziger sack bist.\nJe mer du gutes hast,\nje mer du gutes irre gast.\nThu sein nit und zer mit fug.\nDu hast guts dein lebtag genug.\nOder du verschuldest on zweifell,\ndas dir der lon wirt von dem teuffell.",
+      "image_path": "extracted_images/Laub-6.png"
+    },
+    {
+      "symbol": "Laub-5",
+      "weissagung": "Dein gluck das bluet,\nwann dich genuget,\nwas dir Got in der zeyt thut,\ndavon hab guten mut.\nUnd biß demutig und volg mir,\nGot gewert dich nach deiner begir\nund will dich nymmer lan,\nwilt du anders seynen willen than.",
+      "image_path": "extracted_images/Laub-5.png"
+    },
+    {
+      "symbol": "Laub-4",
+      "weissagung": "Vier Lauber sagent dir ungemach,\naber dir ist kommen der selden tag:\nDu gewynnst noch sylber und goldt,\ndeine veind werden dir holdt.\nDarzu wirt dir dein lieb underthan,\ndein trauren solt du mit freuden lan,\nund solt seyn waidelich und fein\ndurch den liebsten bulen dein.",
+      "image_path": "extracted_images/Laub-4.png"
+    },
+    {
+      "symbol": "Laub-3",
+      "weissagung": "Drey Lauber, feyn und klar,\nthun dir gantz offenbar,\ndas du in deinen hertzen traist\nkummer und arbeyt aller maist\numb ein ding, das nit mag sein.\nDavon laß ab, ist der rate mein.\nUnd wilt du es enbern nicht,\ngroß leyt dir von dem selben geschicht.",
+      "image_path": "extracted_images/Laub-3.png"
+    },
+    {
+      "symbol": "Laub-2",
+      "weissagung": "Ich mag dich underweisen nicht,\nwann dir dein hertz selber vergicht.\nWann du zweifelst selber daran,\nwie du es wollest griffen an.\nDu solt Got allezeit bitten sere,\ndas er dir es zu dem besten kere,\nund das dein will wird volbracht,\ndarnach du gedenckest tag und nacht.",
+      "image_path": "extracted_images/Laub-2.png"
+    }
+  ]
+}

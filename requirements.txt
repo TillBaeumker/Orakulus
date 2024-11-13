@@ -1,0 +1,7 @@
+streamlit==1.26.0  # Streamlit für die Web-Oberfläche
+python-dotenv==1.0.0  # Zum Laden der .env-Datei
+langchain==0.0.268  # Für LLM-Integration (z.B. ChatOpenAI, LLMChain, Prompts)
+openai==0.27.4  # Für die OpenAI-API
+neo4j==5.11.0  # Für die Neo4j-Graph-Verbindung
+langchain-community==0.1.2  # Für Neo4jGraph und Neo4jVector
+Pillow==9.3.0  # Für die Bildverarbeitung (z.B. Anzeige der Kartenbilder)
