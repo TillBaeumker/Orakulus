@@ -2,14 +2,13 @@
 import streamlit as st
 import json
 import random
-from dotenv import load_dotenv
-import os
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain import LLMChain
 from langchain_community.graphs import Neo4jGraph
 from langchain_community.vectorstores import Neo4jVector
 from langchain_openai import OpenAIEmbeddings
+from neo4j import GraphDatabase
 
 # OpenAI- und Neo4j-Details aus Streamlit Secrets laden
 openai_api_key = st.secrets["OPENAI_API_KEY"]
@@ -24,27 +23,34 @@ if not openai_api_key:
 if not neo4j_uri or not neo4j_username or not neo4j_password:
     raise ValueError("Fehler: Neo4j-Verbindungsdetails konnten nicht geladen werden.")
 
-# Initialisierung
+# Initialisierung von OpenAI LLM
 try:
     llm = ChatOpenAI(temperature=0, model_name="gpt-4o-mini", openai_api_key=openai_api_key)
     print("OpenAI LLM erfolgreich initialisiert.")
 except Exception as e:
     raise ValueError(f"Fehler bei der Initialisierung des LLM: {e}")
 
-try:
-    graph = Neo4jGraph(uri=neo4j_uri, username=neo4j_username, password=neo4j_password)
-    print("Neo4j-Graph erfolgreich initialisiert.")
-except Exception as e:
-    raise ValueError(f"Fehler bei der Initialisierung des Neo4j-Graphen: {e}")
+# Verbindung zu Neo4j herstellen
+def connect_to_neo4j():
+    try:
+        driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_username, neo4j_password))
+        driver.verify_connectivity()
+        print("Neo4j-Graph erfolgreich initialisiert.")
+        return driver
+    except Exception as e:
+        raise ValueError(f"Fehler bei der Initialisierung des Neo4j-Graphen: {e}")
 
+driver = connect_to_neo4j()
 
+# Initialisierung des Vektor-Retrievers
 try:
     vector_index = Neo4jVector.from_existing_graph(
-        embedding=OpenAIEmbeddings(),
+        embedding=OpenAIEmbeddings(openai_api_key=openai_api_key),
         search_type="hybrid",
         node_label="Document",
         text_node_properties=["text"],
-        embedding_node_property="embedding"
+        embedding_node_property="embedding",
+        graph_driver=driver  # Übergabe des Neo4j-Drivers
     )
     print("Neo4j Vector Index erfolgreich initialisiert.")
 except Exception as e:
@@ -130,3 +136,7 @@ elif mode == "Losbuch spielen":
             st.image(los['image_path'])
         except Exception as e:
             st.write(f"Fehler beim Ziehen des Loses: {e}")
+
+# Vergessen Sie nicht, den Neo4j-Driver am Ende der Sitzung zu schließen
+if driver:
+    driver.close()
