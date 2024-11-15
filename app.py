@@ -11,27 +11,32 @@ from langchain_community.graphs import Neo4jGraph
 from langchain_community.vectorstores import Neo4jVector
 from langchain_openai import OpenAIEmbeddings
 
-# %% Lade Umgebungsvariablen
-load_dotenv("env.env")
+# OpenAI- und Neo4j-Details aus Streamlit Secrets laden
+openai_api_key = st.secrets["OPENAI_API_KEY"]
+neo4j_uri = st.secrets["NEO4J_URI"]
+neo4j_username = st.secrets["NEO4J_USERNAME"]
+neo4j_password = st.secrets["NEO4J_PASSWORD"]
 
-# OpenAI- und Neo4j-Details aus den Umgebungsvariablen laden
-openai_api_key = os.getenv("OPENAI_API_KEY")
-neo4j_uri = os.getenv("NEO4J_URI")
-neo4j_username = os.getenv("NEO4J_USERNAME")
-neo4j_password = os.getenv("NEO4J_PASSWORD")
-
-# Überprüfe, ob API-Schlüssel korrekt geladen wurde
+# Überprüfen, ob Secrets geladen wurden
 if not openai_api_key:
     raise ValueError("Fehler: OpenAI API-Schlüssel konnte nicht geladen werden.")
 
-# %% Initialisiere OpenAI LLM und Neo4j
-llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-0125")
+if not neo4j_uri or not neo4j_username or not neo4j_password:
+    raise ValueError("Fehler: Neo4j-Verbindungsdetails konnten nicht geladen werden.")
+
+# Initialisierung
+try:
+    llm = ChatOpenAI(temperature=0, model_name="gpt-4o-mini", openai_api_key=openai_api_key)
+    print("OpenAI LLM erfolgreich initialisiert.")
+except Exception as e:
+    raise ValueError(f"Fehler bei der Initialisierung des LLM: {e}")
 
 try:
     graph = Neo4jGraph(uri=neo4j_uri, username=neo4j_username, password=neo4j_password)
     print("Neo4j-Graph erfolgreich initialisiert.")
 except Exception as e:
     raise ValueError(f"Fehler bei der Initialisierung des Neo4j-Graphen: {e}")
+
 
 try:
     vector_index = Neo4jVector.from_existing_graph(
