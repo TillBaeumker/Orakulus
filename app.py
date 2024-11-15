@@ -29,12 +29,19 @@ try:
 except Exception as e:
     raise ValueError(f"Fehler bei der Initialisierung des LLM: {e}")
 
+# Verbindung herstellen
+def connect_to_neo4j(uri, username, password):
+    try:
+        # Erstellen eines Treiberobjekts
+        driver = GraphDatabase.driver(uri, auth=(username, password))
+        driver.verify_connectivity()
+        print("Verbindung erfolgreich hergestellt.")
+        return driver
+    except Exception as e:
+        raise ValueError(f"Fehler bei der Verbindung mit Neo4j: {e}")
+
 # Verbindung zu Neo4j herstellen
-try:
-    graph = Neo4jGraph(uri=neo4j_uri, username=neo4j_username, password=neo4j_password)
-    print("Neo4j-Graph erfolgreich initialisiert.")
-except Exception as e:
-    raise ValueError(f"Fehler bei der Initialisierung des Neo4j-Graphen: {e}")
+neo4j_driver = connect_to_neo4j(neo4j_uri, neo4j_username, neo4j_password)
 
 # Initialisierung des Neo4j Vector Index
 try:
@@ -135,5 +142,5 @@ elif mode == "Losbuch spielen":
             st.error(f"Fehler: {e}")
 
 # Neo4j-Driver schließen
-if graph:
-    graph.close()
+if neo4j_driver:
+    neo4j_driver.close()
