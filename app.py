@@ -33,7 +33,7 @@ except Exception as e:
 # Verbindung zu Neo4j herstellen
 def connect_to_neo4j():
     try:
-        driver = GraphDatabase.driver(URI=neo4j_uri, auth=(neo4j_username, neo4j_password))
+        driver = GraphDatabase.driver(uri=neo4j_uri, auth=(neo4j_username, neo4j_password))
         driver.verify_connectivity()
         print("Neo4j-Graph erfolgreich initialisiert.")
         return driver
