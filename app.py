@@ -70,29 +70,28 @@ def answer_general_question(question):
         "gedruckt von Johann Schöffer, Mainz um 1510. Herausgegeben von Matthias Däumer, "
         "S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts'."
     )
+
+    # Prüfe auf spezifische Fragen zum Mainzer Kartenlosbuch
+    keywords = ["Mainzer Kartenlosbuch", "losz buch ausz der karten", "Johann Schöffer"]
+    if any(keyword.lower() in question.lower() for keyword in keywords):
+        # Kontext aus Neo4j laden
+        try:
+            unstructured_results = vector_index.similarity_search(question)
+            if unstructured_results:
+                context = "\n".join([res.page_content for res in unstructured_results])
+                return f"Antwort basierend auf dem Buch:\n\n{context}"
+            else:
+                return "Das Buch enthält keine spezifischen Informationen zu dieser Frage."
+        except Exception as e:
+            return f"Fehler bei der Verarbeitung der Buchinhalte: {e}"
+
+    # Generiere allgemeine Antworten für andere Fragen
     try:
-        # Suche im Neo4j-Vektorindex nach relevanten Textpassagen
-        unstructured_results = vector_index.similarity_search(question)
-
-        if unstructured_results:
-            # Kontext aus gefundenen Passagen erstellen
-            context = "\n".join([res.page_content for res in unstructured_results])
-            prompt = ChatPromptTemplate.from_template("""
-                Hier ist der Kontext:
-                {context}
-
-                Frage: {question}
-                Antwort:
-            """)
-            answer_chain = LLMChain(prompt=prompt, llm=llm)
-            response = answer_chain.run(context=context, question=question)
-            return f"{disclaimer}\n\nAntwort: {response}"
-        else:
-            # Generiere Antwort, wenn keine relevanten Textpassagen im Buch gefunden wurden
-            response = llm(f"Beantworte die folgende Frage: '{question}'")
-            return f"{disclaimer}\n\nAntwort: {response}"
+        response = llm(f"Beantworte die folgende Frage: '{question}'")
+        return f"{disclaimer}\n\nAntwort: {response}"
     except Exception as e:
         return f"{disclaimer}\n\nFehler bei der Beantwortung der Frage: {e}"
+
 
 # %% Streamlit UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
