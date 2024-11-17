@@ -60,37 +60,39 @@ except Exception as e:
 
 # %% Funktionen zur Verarbeitung
 def answer_general_question(question):
-    """Nutze den Neo4j-Graphen und den Vector-Index, um Fragen zu beantworten, mit Hinweis, falls die Information nicht im Buch steht."""
+    """
+    Beantwortet allgemeine Fragen. Fügt einen Disclaimer hinzu, falls die Informationen
+    nicht aus dem Buch 'Mainzer Kartenlosbuch' stammen.
+    """
     try:
-        # Suche im Neo4j Vector Index
+        # Unstrukturierte Suche im Vektor-Index
         unstructured_results = vector_index.similarity_search(question)
 
-        # Überprüfen, ob relevante Ergebnisse gefunden wurden
-        if not unstructured_results:
-            # Keine relevanten Ergebnisse gefunden
+        # Wenn es Ergebnisse gibt, Kontext aus diesen generieren
+        if unstructured_results:
+            context = "\n".join([res.page_content for res in unstructured_results])
+            prompt = ChatPromptTemplate.from_template("""
+                Hier ist der Kontext:
+                {context}
+
+                Frage: {question}
+                Antwort:
+            """)
+            answer_chain = LLMChain(prompt=prompt, llm=llm)
+            return answer_chain.run(context=context, question=question)
+        else:
+            # Generiere Antwort auf die Frage
+            response = llm(f"Beantworte die folgende Frage: '{question}'")
             disclaimer = (
-                "Die folgende Antwort basiert nicht auf dem Buch 'Mainzer Kartenlosbuch', "
-                "da die gesuchte Information dort nicht gefunden wurde."
+                "Hinweis: Diese Antwort basiert nicht auf dem Buch "
+                "'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, "
+                "gedruckt von Johann Schöffer, Mainz um 1510. Herausgegeben von Matthias Däumer, "
+                "S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts'."
             )
-            generated_response = llm(question)  # LLM nutzt allgemeines Wissen zur Beantwortung
-            return f"{disclaimer}\n\n{generated_response}"
-
-        # Kontext aus den Ergebnissen extrahieren
-        context = "\n".join([res.page_content for res in unstructured_results])
-
-        # Prompt vorbereiten
-        prompt = ChatPromptTemplate.from_template("""
-            Basierend auf dem folgenden Buchinhalt:
-            {context}
-
-            Frage: {question}
-            Antwort (nur basierend auf dem Buch):
-        """)
-        answer_chain = LLMChain(prompt=prompt, llm=llm)
-        return answer_chain.run(context=context, question=question)
-
+            return f"{disclaimer}\n\nAntwort: {response}"
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
+
 
 
 # %% Streamlit UI
