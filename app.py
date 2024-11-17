@@ -29,16 +29,17 @@ try:
 except Exception as e:
     raise ValueError(f"Fehler bei der Initialisierung des LLM: {e}")
 
+
 # Verbindung herstellen
 def connect_to_neo4j(uri, username, password):
     try:
-        # Erstellen eines Treiberobjekts
         driver = GraphDatabase.driver(uri, auth=(username, password))
         driver.verify_connectivity()
         print("Verbindung erfolgreich hergestellt.")
         return driver
     except Exception as e:
         raise ValueError(f"Fehler bei der Verbindung mit Neo4j: {e}")
+
 
 # Verbindung zu Neo4j herstellen
 neo4j_driver = connect_to_neo4j(neo4j_uri, neo4j_username, neo4j_password)
@@ -56,51 +57,18 @@ try:
 except Exception as e:
     raise ValueError(f"Fehler bei der Initialisierung des Vektor-Retrievers: {e}")
 
-# %% Lese JSON-Daten für das Kartenlosbuch
-try:
-    with open("./data_karten.json", "r", encoding="utf-8") as file:
-        karten_data = json.load(file)["kartenlosbuch"]
-except Exception as e:
-    raise ValueError(f"Fehler beim Laden der Karten-Daten: {e}")
 
 # %% Funktionen zur Verarbeitung
-def get_uebersetzung_und_deutung(weissagung_text):
-    """LLM für Hochdeutsch-Übersetzung und Deutung der Weissagung."""
-    prompt_uebersetzung = f"Übersetze diesen alten deutschen Text ins moderne Hochdeutsch: '{weissagung_text}'"
-    prompt_deutung = f"Basierend auf dieser Weissagung, was könnte sie in 2 Sätzen bedeuten oder andeuten? '{weissagung_text}'"
-
-    try:
-        # Übersetzung
-        uebersetzung_response = llm(prompt_uebersetzung)
-        # Deutung
-        deutung_response = llm(prompt_deutung)
-        return uebersetzung_response.strip(), deutung_response.strip()
-    except Exception as e:
-        raise ValueError(f"Fehler bei der Verarbeitung der Weissagung: {e}")
-
-def ziehe_random_karte():
-    """Ziehe ein zufälliges Los und liefere Symbol, Weissagung, Übersetzung und Deutung."""
-    karte = random.choice(karten_data)
-    uebersetzung, deutung = get_uebersetzung_und_deutung(karte["weissagung"])
-
-    return {
-        "symbol": karte["symbol"],
-        "original_weissagung": karte["weissagung"],
-        "hochdeutsch_weissagung": uebersetzung,
-        "deutung": deutung,
-        "image_path": karte["image_path"]
-    }
-
 def answer_general_question(question):
     """Nutze den Neo4j-Graphen und den Vector-Index, um allgemeine Fragen zu beantworten."""
     try:
-        # Unstrukturierte Suche im Vektor-Index
         unstructured_results = vector_index.similarity_search(question)
+        if not unstructured_results:
+            return f"Das steht nicht im Buch 'Mainzer Kartenlosbuch, Eyn losz buch ausz der karten gemacht, Gedruckt von Johann Schöffer, Mainz um 1510, Herausgegeben von Matthias Däumer.'"
 
-        # Ergebnisse zusammenstellen
         context = "\n".join([res.page_content for res in unstructured_results])
         prompt = ChatPromptTemplate.from_template("""
-            Hier ist der Kontext:
+            Hier ist der Kontext aus dem Buch 'Mainzer Kartenlosbuch':
             {context}
 
             Frage: {question}
@@ -110,6 +78,7 @@ def answer_general_question(question):
         return answer_chain.run(context=context, question=question)
     except Exception as e:
         raise ValueError(f"Fehler bei der Beantwortung der Frage: {e}")
+
 
 # %% Streamlit UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
@@ -129,17 +98,8 @@ if mode == "Allgemeine Fragen":
             st.error(f"Fehler: {e}")
 
 elif mode == "Losbuch spielen":
-    st.subheader("Ziehe ein Los!")
-    if st.button("Los ziehen"):
-        try:
-            los = ziehe_random_karte()
-            st.write(f"**Symbol**: {los['symbol']}")
-            st.write(f"**Weissagung (Original)**: {los['original_weissagung']}")
-            st.write(f"**Weissagung (Hochdeutsch)**: {los['hochdeutsch_weissagung']}")
-            st.write(f"**Deutung**: {los['deutung']}")
-            st.image(los['image_path'])
-        except Exception as e:
-            st.error(f"Fehler: {e}")
+    st.subheader("Ziehe ein Los! (Diese Funktion ist derzeit deaktiviert)")
+    st.write("Weitere Informationen werden in einer zukünftigen Version hinzugefügt.")
 
 # Neo4j-Driver schließen
 if neo4j_driver:
