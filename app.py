@@ -29,7 +29,6 @@ try:
 except Exception as e:
     raise ValueError(f"Fehler bei der Initialisierung des LLM: {e}")
 
-
 # Verbindung herstellen
 def connect_to_neo4j(uri, username, password):
     try:
@@ -40,7 +39,6 @@ def connect_to_neo4j(uri, username, password):
         return driver
     except Exception as e:
         raise ValueError(f"Fehler bei der Verbindung mit Neo4j: {e}")
-
 
 # Verbindung zu Neo4j herstellen
 neo4j_driver = connect_to_neo4j(neo4j_uri, neo4j_username, neo4j_password)
@@ -58,14 +56,6 @@ try:
 except Exception as e:
     raise ValueError(f"Fehler bei der Initialisierung des Vektor-Retrievers: {e}")
 
-# %% Lese JSON-Daten für das Kartenlosbuch
-try:
-    with open("./data_karten.json", "r", encoding="utf-8") as file:
-        karten_data = json.load(file)["kartenlosbuch"]
-except Exception as e:
-    raise ValueError(f"Fehler beim Laden der Karten-Daten: {e}")
-
-
 # %% Neue Funktion: Nur Daten aus dem Graphen verwenden
 def answer_question_from_graph(question):
     """
@@ -79,17 +69,20 @@ def answer_question_from_graph(question):
 
         if results:
             # Kontext aus den Suchergebnissen extrahieren
-            context = "\n\n".join([res.page_content for res in results])
+            contexts = [res.page_content.strip() for res in results]
+            clean_context = "\n\n".join(contexts)
 
-            # Ergebnisse zusammenführen und als Antwort formulieren
-            return f"Antwort basierend auf dem Neo4j-Graphen:\n\n{context}"
+            # Sicherstellen, dass die Ausgabe klar und wohlformuliert ist
+            return (
+                f"Antwort basierend auf dem Neo4j-Graphen:\n\n{clean_context}"
+                if clean_context
+                else "Es wurden keine relevanten Informationen im Neo4j-Graphen gefunden."
+            )
         else:
-            # Keine Ergebnisse gefunden
             return "Es wurden keine relevanten Informationen im Neo4j-Graphen gefunden."
     except Exception as e:
         # Fehlerbehandlung
         return f"Fehler bei der Beantwortung der Frage: {e}"
-
 
 # %% Funktionen zur Verarbeitung
 def get_uebersetzung_und_deutung(weissagung_text):
@@ -106,7 +99,6 @@ def get_uebersetzung_und_deutung(weissagung_text):
     except Exception as e:
         raise ValueError(f"Fehler bei der Verarbeitung der Weissagung: {e}")
 
-
 def ziehe_random_karte():
     """Ziehe ein zufälliges Los und liefere Symbol, Weissagung, Übersetzung und Deutung."""
     karte = random.choice(karten_data)
@@ -119,7 +111,6 @@ def ziehe_random_karte():
         "deutung": deutung,
         "image_path": karte["image_path"]
     }
-
 
 # %% Streamlit UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
