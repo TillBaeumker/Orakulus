@@ -67,7 +67,8 @@ except Exception as e:
 def answer_question_from_graph(question):
     """
     Beantwortet Fragen ausschließlich basierend auf Daten aus dem Neo4j-Graphen.
-    Wenn keine relevanten Informationen gefunden werden, wird dies klar kommuniziert.
+    Gibt eine klare und wohlformulierte Antwort zurück, oder informiert,
+    wenn keine passenden Daten gefunden wurden.
     """
     try:
         # Suche nach relevanten Inhalten im Neo4j-Graphen
@@ -75,18 +76,27 @@ def answer_question_from_graph(question):
 
         if results:
             # Kontext aus den Suchergebnissen extrahieren
-            context = "\n".join([res.page_content for res in results])
-            return (
-                f"Antwort basierend auf dem Neo4j-Graphen:\n\n{context}"
-            )
+            filtered_results = [
+                res.page_content for res in results
+                if "Lizenziert für" in res.page_content  # Filtere relevante Inhalte
+            ]
+
+            if filtered_results:
+                # Ergebnisse zusammenführen und zurückgeben
+                context = "\n\n".join(filtered_results)
+                return f"Antwort basierend auf dem Neo4j-Graphen:\n\n{context}"
+            else:
+                # Keine relevanten Informationen gefunden
+                return (
+                    "Die gesuchten Informationen sind nicht im verfügbaren Neo4j-Graphen enthalten."
+                )
         else:
-            # Keine relevanten Informationen im Graphen gefunden
-            return (
-                "Die gesuchten Informationen sind nicht im verfügbaren Neo4j-Graphen enthalten."
-            )
+            # Keine Ergebnisse gefunden
+            return "Es wurden keine relevanten Informationen im Neo4j-Graphen gefunden."
     except Exception as e:
         # Fehlerbehandlung
         return f"Fehler bei der Beantwortung der Frage: {e}"
+
 
 # %% Funktionen zur Verarbeitung
 def get_uebersetzung_und_deutung(weissagung_text):
