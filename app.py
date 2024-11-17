@@ -59,46 +59,30 @@ except Exception as e:
 
 
 # %% Funktionen zur Verarbeitung
-def answer_general_question(question):
+def answer_question_from_graph(question):
     """
-    Beantwortet allgemeine Fragen mit Disclaimern, ob die Informationen aus dem Buch
-    'Mainzer Kartenlosbuch' oder generativ erstellt wurden.
+    Beantwortet Fragen ausschließlich basierend auf Daten aus dem Neo4j-Graphen.
+    Wenn keine relevanten Informationen gefunden werden, wird dies klar kommuniziert.
     """
     try:
-        # Unstrukturierte Suche im Vektor-Index
-        unstructured_results = vector_index.similarity_search(question)
+        # Suche nach relevanten Inhalten im Neo4j-Graphen
+        results = vector_index.similarity_search(question)
 
-        if unstructured_results:
+        if results:
             # Kontext aus den Suchergebnissen extrahieren
-            context = "\n".join([res.page_content for res in unstructured_results])
-
-            # Generative Antwort basierend auf dem Buchkontext
-            prompt = ChatPromptTemplate.from_template("""
-                Hier ist der Kontext:
-                {context}
-
-                Frage: {question}
-                Antwort:
-            """)
-            answer_chain = LLMChain(prompt=prompt, llm=llm)
-            answer = answer_chain.run(context=context, question=question).strip()
-
-            # Antwort mit Buch-Disclaimer
+            context = "\n".join([res.page_content for res in results])
             return (
-                f"Antwort basierend auf dem Buch 'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, "
-                f"gedruckt von Johann Schöffer, Mainz um 1510. Herausgegeben von Matthias Däumer, S. Hirzel Verlag, 2021':\n\n"
-                f"{answer}"
+                f"Antwort basierend auf dem Neo4j-Graphen:\n\n{context}"
             )
         else:
-            # Generative Antwort ohne Buchkontext
-            generated_answer = llm(f"Bitte beantworte diese Frage: {question}").strip()
+            # Keine relevanten Informationen im Graphen gefunden
             return (
-                f"Antwort: Diese Informationen stammen nicht aus dem Buch 'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, "
-                f"gedruckt von Johann Schöffer, Mainz um 1510. Herausgegeben von Matthias Däumer, S. Hirzel Verlag, 2021'. "
-                f"Sie wurden generativ basierend auf allgemeinem Wissen erstellt:\n\n{generated_answer}"
+                "Die gesuchten Informationen sind nicht im verfügbaren Neo4j-Graphen enthalten."
             )
     except Exception as e:
+        # Fehlerbehandlung
         return f"Fehler bei der Beantwortung der Frage: {e}"
+
 
 
 # %% Streamlit UI
