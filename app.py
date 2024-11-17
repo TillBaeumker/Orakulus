@@ -61,37 +61,44 @@ except Exception as e:
 # %% Funktionen zur Verarbeitung
 def answer_general_question(question):
     """
-    Beantwortet allgemeine Fragen mit einer prägnanten Antwort, basierend auf dem Buch,
-    und fügt einen Disclaimer hinzu, wenn die Informationen nicht explizit aus dem Buch stammen.
+    Beantwortet allgemeine Fragen. Antworten, die aus dem Graphen stammen, werden entsprechend
+    markiert, während für generierte Antworten ein Disclaimer hinzugefügt wird.
     """
-    disclaimer = (
-        "Hinweis: Diese Antwort basiert nicht vollständig auf dem Buch "
-        "'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, "
-        "gedruckt von Johann Schöffer, Mainz um 1510. Herausgegeben von Matthias Däumer, "
-        "S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts'."
-    )
-
-    # Suche nach Informationen in Neo4j
     try:
+        # Unstrukturierte Suche im Vektor-Index
         unstructured_results = vector_index.similarity_search(question)
+
         if unstructured_results:
-            # Kompakte Antwort generieren aus den Suchergebnissen
-            context = "\n".join([res.page_content for res in unstructured_results[:3]])
-            return f"Antwort basierend auf dem Buch:\n\n{context[:500]}...\n\nHinweis: Die Informationen wurden aus relevanten Passagen des Buches abgeleitet."
-        else:
+            # Kontext aus den Suchergebnissen extrahieren
+            context = "\n".join([res.page_content for res in unstructured_results])
+
+            # Generative KI-basierte Antwort erstellen
+            prompt = ChatPromptTemplate.from_template("""
+                Hier ist der Kontext:
+                {context}
+
+                Frage: {question}
+                Antwort:
+            """)
+            answer_chain = LLMChain(prompt=prompt, llm=llm)
+            answer = answer_chain.run(context=context, question=question).strip()
+
+            # Antwort mit Disclaimer für Inhalte aus dem Buch
             return (
-                f"Antwort basierend auf dem Buch:\n\n"
-                "Leider enthält das Buch keine direkten Informationen zu Ihrer Frage."
+                f"Antwort basierend auf dem Buch 'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, "
+                f"gedruckt von Johann Schöffer, Mainz um 1510. Herausgegeben von Matthias Däumer, S. Hirzel Verlag, 2021':\n\n"
+                f"{answer}"
+            )
+        else:
+            # Generative Antwort ohne Buchkontext mit Disclaimer
+            answer = llm(f"Bitte beantworte diese Frage: {question}").strip()
+            return (
+                f"Antwort: Diese Informationen stammen nicht aus dem Buch 'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, "
+                f"gedruckt von Johann Schöffer, Mainz um 1510. Herausgegeben von Matthias Däumer, S. Hirzel Verlag, 2021'. "
+                f"Sie wurden generativ basierend auf allgemeinem Wissen erstellt:\n\n{answer}"
             )
     except Exception as e:
-        return f"Fehler bei der Verarbeitung der Buchinhalte: {e}"
-
-    # Generiere allgemeine Antworten, falls keine Buchinformationen gefunden werden
-    try:
-        response = llm(f"Beantworte die folgende Frage: '{question}'")
-        return f"{disclaimer}\n\nAntwort: {response}"
-    except Exception as e:
-        return f"{disclaimer}\n\nFehler bei der Beantwortung der Frage: {e}"
+        return f"Fehler bei der Beantwortung der Frage: {e}"
 
 
 # %% Streamlit UI
