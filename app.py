@@ -85,34 +85,48 @@ def answer_question_from_graph(question):
         return f"Fehler bei der Beantwortung der Frage: {e}"
 
 # %% Funktionen zur Verarbeitung
-def get_uebersetzung_und_deutung(weissagung_text):
-    """LLM für Hochdeutsch-Übersetzung und Deutung der Weissagung."""
-    prompt_uebersetzung = f"Übersetze diesen alten deutschen Text ins moderne Hochdeutsch: '{weissagung_text}'"
-    prompt_deutung = f"Basierend auf dieser Weissagung, was könnte sie in 2 Sätzen bedeuten oder andeuten? '{weissagung_text}'"
-
+# %% Neue Funktion: Fragen beantworten basierend auf dem Graphen
+def answer_question_from_graph(question):
+    """
+    Beantwortet Fragen ausschließlich basierend auf Daten aus dem Neo4j-Graphen.
+    Gibt eine klar formulierte Antwort zurück oder informiert, wenn keine Daten vorhanden sind.
+    """
     try:
-        # Übersetzung
-        uebersetzung_response = llm(prompt_uebersetzung)
-        # Deutung
-        deutung_response = llm(prompt_deutung)
-        return uebersetzung_response.strip(), deutung_response.strip()
+        # Suche nach relevanten Inhalten im Neo4j-Graphen
+        results = vector_index.similarity_search(question)
+
+        if results:
+            # Kontext aus den Suchergebnissen extrahieren
+            contexts = [res.page_content.strip() for res in results]
+
+            # Konsolidieren und verständlich formulieren
+            combined_context = " ".join(contexts)
+
+            # Formuliere eine Antwort basierend auf dem gefundenen Kontext
+            prompt = f"""
+            Hier sind Informationen aus dem Neo4j-Graphen:
+            {combined_context}
+
+            Formuliere eine gut verständliche und wohlformulierte Antwort auf die folgende Frage:
+            '{question}'
+            """
+            # Generiere die Antwort mithilfe des LLMs
+            answer_chain = LLMChain(
+                prompt=ChatPromptTemplate.from_template(prompt),
+                llm=llm
+            )
+            final_answer = answer_chain.run(question=question, context=combined_context)
+            return f"Antwort basierend auf dem Neo4j-Graphen:\n\n{final_answer.strip()}"
+        else:
+            return (
+                "Es wurden keine relevanten Informationen im Neo4j-Graphen gefunden."
+            )
     except Exception as e:
-        raise ValueError(f"Fehler bei der Verarbeitung der Weissagung: {e}")
+        # Fehlerbehandlung
+        return f"Fehler bei der Beantwortung der Frage: {e}"
 
-def ziehe_random_karte():
-    """Ziehe ein zufälliges Los und liefere Symbol, Weissagung, Übersetzung und Deutung."""
-    karte = random.choice(karten_data)
-    uebersetzung, deutung = get_uebersetzung_und_deutung(karte["weissagung"])
 
-    return {
-        "symbol": karte["symbol"],
-        "original_weissagung": karte["weissagung"],
-        "hochdeutsch_weissagung": uebersetzung,
-        "deutung": deutung,
-        "image_path": karte["image_path"]
-    }
-
-# %% Streamlit UI
+# %% Anpassung der Streamlit-UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
 
 # Auswahl der Modus
@@ -145,3 +159,4 @@ elif mode == "Losbuch spielen":
 # Neo4j-Driver schließen
 if neo4j_driver:
     neo4j_driver.close()
+
