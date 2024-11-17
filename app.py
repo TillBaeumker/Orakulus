@@ -1,10 +1,8 @@
 # %% Imports
 import streamlit as st
-import json
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
-from langchain_community.graphs import Neo4jGraph
 from langchain_community.vectorstores import Neo4jVector
 from langchain_openai import OpenAIEmbeddings
 from neo4j import GraphDatabase
@@ -54,7 +52,7 @@ try:
 except Exception as e:
     raise ValueError(f"Fehler bei der Initialisierung des Vektor-Retrievers: {e}")
 
-# Neue Funktion: Kontext aus dem Neo4j-Graphen abrufen
+# Funktion: Kontext aus dem Graphen abrufen
 def retrieve_graph_context(question):
     """
     Sucht nach relevanten Inhalten im Neo4j-Graphen basierend auf der Frage.
@@ -69,16 +67,16 @@ def retrieve_graph_context(question):
     except Exception as e:
         return f"Fehler bei der Suche im Graphen: {e}"
 
-# Funktion: Antworten basierend auf Graph-Daten generieren
-def answer_question_from_graph_with_llm(question):
+# Funktion: Antwort generieren basierend auf Graph-Daten
+def answer_question_strictly_from_graph(question):
     """
-    Beantwortet Fragen basierend auf Daten aus dem Neo4j-Graphen.
+    Beantwortet Fragen ausschließlich basierend auf Graph-Daten.
+    Keine Antwort wird generiert, wenn keine relevanten Daten gefunden werden.
     """
     try:
-        # Kontext aus Graph-Daten abrufen
         graph_context = retrieve_graph_context(question)
 
-        if graph_context.strip():  # Nur fortfahren, wenn Kontext vorhanden
+        if graph_context.strip():
             # Antwort basierend auf Graph-Daten generieren
             prompt_template = ChatPromptTemplate.from_template("""
                 Nutze ausschließlich die folgenden Informationen, um eine Antwort zu generieren:
@@ -91,54 +89,23 @@ def answer_question_from_graph_with_llm(question):
             chain = LLMChain(llm=llm, prompt=prompt_template)
             return chain.run(context=graph_context, question=question)
         else:
-            return "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden."
-    except Exception as e:
-        return f"Fehler bei der Beantwortung der Frage: {e}"
-
-# Funktion: Antworten direkt aus Graph-Daten
-def answer_question_from_graph(question):
-    """
-    Gibt ausschließlich Informationen aus dem Neo4j-Graphen zurück.
-    """
-    try:
-        graph_context = retrieve_graph_context(question)
-
-        if graph_context.strip():
-            return f"Antwort basierend auf dem Neo4j-Graphen:\n\n{graph_context}"
-        else:
-            return "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden."
+            # Keine Antwort, wenn keine relevanten Daten gefunden werden
+            return "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden. Bitte stelle eine spezifische Frage, die sich auf die verfügbaren Daten bezieht."
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
 
 # Anpassung der Streamlit-UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
 
-# Auswahl der Modus
-mode = st.selectbox("Wähle einen Modus", ["Allgemeine Fragen", "Losbuch spielen"])
+st.subheader("Stelle eine Frage basierend auf den verfügbaren Graph-Daten")
+question = st.text_input("Frage eingeben")
 
-if mode == "Allgemeine Fragen":
-    st.subheader("Stelle eine allgemeine Frage")
-    question = st.text_input("Frage eingeben")
-
-    if st.button("Frage stellen"):
-        try:
-            answer = answer_question_from_graph_with_llm(question)
-            st.write(f"**Antwort**: {answer}")
-        except Exception as e:
-            st.error(f"Fehler: {e}")
-
-elif mode == "Losbuch spielen":
-    st.subheader("Ziehe ein Los!")
-    if st.button("Los ziehen"):
-        try:
-            los = ziehe_random_karte()
-            st.write(f"**Symbol**: {los['symbol']}")
-            st.write(f"**Weissagung (Original)**: {los['original_weissagung']}")
-            st.write(f"**Weissagung (Hochdeutsch)**: {los['hochdeutsch_weissagung']}")
-            st.write(f"**Deutung**: {los['deutung']}")
-            st.image(los['image_path'])
-        except Exception as e:
-            st.error(f"Fehler: {e}")
+if st.button("Frage stellen"):
+    try:
+        answer = answer_question_strictly_from_graph(question)
+        st.write(f"**Antwort**: {answer}")
+    except Exception as e:
+        st.error(f"Fehler: {e}")
 
 # Neo4j-Driver schließen
 if neo4j_driver:
