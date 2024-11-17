@@ -61,8 +61,8 @@ except Exception as e:
 # %% Funktionen zur Verarbeitung
 def answer_general_question(question):
     """
-    Beantwortet allgemeine Fragen. Antworten, die aus dem Graphen stammen, werden entsprechend
-    markiert, während für generierte Antworten ein Disclaimer hinzugefügt wird.
+    Beantwortet allgemeine Fragen mit klaren Disclaimern, ob die Informationen aus dem Buch
+    'Mainzer Kartenlosbuch' stammen oder generativ erstellt wurden.
     """
     try:
         # Unstrukturierte Suche im Vektor-Index
@@ -91,11 +91,11 @@ def answer_general_question(question):
             )
         else:
             # Generative Antwort ohne Buchkontext mit Disclaimer
-            answer = llm(f"Bitte beantworte diese Frage: {question}").strip()
+            generated_answer = llm(f"Bitte beantworte diese Frage: {question}").strip()
             return (
                 f"Antwort: Diese Informationen stammen nicht aus dem Buch 'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, "
                 f"gedruckt von Johann Schöffer, Mainz um 1510. Herausgegeben von Matthias Däumer, S. Hirzel Verlag, 2021'. "
-                f"Sie wurden generativ basierend auf allgemeinem Wissen erstellt:\n\n{answer}"
+                f"Sie wurden generativ basierend auf allgemeinem Wissen erstellt:\n\n{generated_answer}"
             )
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
