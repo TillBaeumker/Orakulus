@@ -29,6 +29,7 @@ try:
 except Exception as e:
     raise ValueError(f"Fehler bei der Initialisierung des LLM: {e}")
 
+
 # Verbindung herstellen
 def connect_to_neo4j(uri, username, password):
     try:
@@ -39,6 +40,7 @@ def connect_to_neo4j(uri, username, password):
         return driver
     except Exception as e:
         raise ValueError(f"Fehler bei der Verbindung mit Neo4j: {e}")
+
 
 # Verbindung zu Neo4j herstellen
 neo4j_driver = connect_to_neo4j(neo4j_uri, neo4j_username, neo4j_password)
@@ -63,6 +65,7 @@ try:
 except Exception as e:
     raise ValueError(f"Fehler beim Laden der Karten-Daten: {e}")
 
+
 # %% Neue Funktion: Nur Daten aus dem Graphen verwenden
 def answer_question_from_graph(question):
     """
@@ -76,20 +79,10 @@ def answer_question_from_graph(question):
 
         if results:
             # Kontext aus den Suchergebnissen extrahieren
-            filtered_results = [
-                res.page_content for res in results
-                if "Lizenziert für" in res.page_content  # Filtere relevante Inhalte
-            ]
+            context = "\n\n".join([res.page_content for res in results])
 
-            if filtered_results:
-                # Ergebnisse zusammenführen und zurückgeben
-                context = "\n\n".join(filtered_results)
-                return f"Antwort basierend auf dem Neo4j-Graphen:\n\n{context}"
-            else:
-                # Keine relevanten Informationen gefunden
-                return (
-                    "Die gesuchten Informationen sind nicht im verfügbaren Neo4j-Graphen enthalten."
-                )
+            # Ergebnisse zusammenführen und als Antwort formulieren
+            return f"Antwort basierend auf dem Neo4j-Graphen:\n\n{context}"
         else:
             # Keine Ergebnisse gefunden
             return "Es wurden keine relevanten Informationen im Neo4j-Graphen gefunden."
@@ -113,6 +106,7 @@ def get_uebersetzung_und_deutung(weissagung_text):
     except Exception as e:
         raise ValueError(f"Fehler bei der Verarbeitung der Weissagung: {e}")
 
+
 def ziehe_random_karte():
     """Ziehe ein zufälliges Los und liefere Symbol, Weissagung, Übersetzung und Deutung."""
     karte = random.choice(karten_data)
@@ -125,6 +119,7 @@ def ziehe_random_karte():
         "deutung": deutung,
         "image_path": karte["image_path"]
     }
+
 
 # %% Streamlit UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
