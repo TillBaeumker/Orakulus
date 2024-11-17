@@ -86,10 +86,10 @@ def answer_question_from_graph(question):
 
 # %% Funktionen zur Verarbeitung
 # %% Neue Funktion: Fragen beantworten basierend auf dem Graphen
-def answer_question_from_graph(question):
+def answer_question_from_graph_with_llm(question):
     """
-    Beantwortet Fragen ausschließlich basierend auf Daten aus dem Neo4j-Graphen.
-    Gibt eine klar formulierte Antwort zurück oder informiert, wenn keine Daten vorhanden sind.
+    Beantwortet Fragen basierend auf Daten aus dem Neo4j-Graphen und formuliert
+    eine klare, verständliche Antwort mithilfe des LLM.
     """
     try:
         # Suche nach relevanten Inhalten im Neo4j-Graphen
@@ -98,32 +98,28 @@ def answer_question_from_graph(question):
         if results:
             # Kontext aus den Suchergebnissen extrahieren
             contexts = [res.page_content.strip() for res in results]
-
-            # Konsolidieren und verständlich formulieren
             combined_context = " ".join(contexts)
 
-            # Formuliere eine Antwort basierend auf dem gefundenen Kontext
-            prompt = f"""
-            Hier sind Informationen aus dem Neo4j-Graphen:
-            {combined_context}
+            if combined_context:
+                # Erzeuge eine gut formulierte Antwort mit dem LLM
+                prompt_template = ChatPromptTemplate.from_template("""
+                    Hier sind die Informationen aus dem Graphen:
+                    {context}
 
-            Formuliere eine gut verständliche und wohlformulierte Antwort auf die folgende Frage:
-            '{question}'
-            """
-            # Generiere die Antwort mithilfe des LLMs
-            answer_chain = LLMChain(
-                prompt=ChatPromptTemplate.from_template(prompt),
-                llm=llm
-            )
-            final_answer = answer_chain.run(question=question, context=combined_context)
-            return f"Antwort basierend auf dem Neo4j-Graphen:\n\n{final_answer.strip()}"
+                    Formuliere eine klare und prägnante Antwort auf die folgende Frage:
+                    {question}
+                """)
+                chain = LLMChain(llm=llm, prompt=prompt_template)
+                return chain.run(context=combined_context, question=question)
+            else:
+                return (
+                    "Die gesuchten Informationen sind nicht im verfügbaren Neo4j-Graphen enthalten."
+                )
         else:
-            return (
-                "Es wurden keine relevanten Informationen im Neo4j-Graphen gefunden."
-            )
+            return "Es wurden keine relevanten Informationen im Neo4j-Graphen gefunden."
     except Exception as e:
-        # Fehlerbehandlung
         return f"Fehler bei der Beantwortung der Frage: {e}"
+
 
 
 # %% Anpassung der Streamlit-UI
