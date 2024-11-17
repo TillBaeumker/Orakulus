@@ -60,24 +60,37 @@ except Exception as e:
 
 # %% Funktionen zur Verarbeitung
 def answer_general_question(question):
-    """Nutze den Neo4j-Graphen und den Vector-Index, um allgemeine Fragen zu beantworten."""
+    """Nutze den Neo4j-Graphen und den Vector-Index, um Fragen zu beantworten, mit Hinweis, falls die Information nicht im Buch steht."""
     try:
+        # Suche im Neo4j Vector Index
         unstructured_results = vector_index.similarity_search(question)
-        if not unstructured_results:
-            return f"Das steht nicht im Buch 'Mainzer Kartenlosbuch, Eyn losz buch ausz der karten gemacht, Gedruckt von Johann Schöffer, Mainz um 1510, Herausgegeben von Matthias Däumer.'"
 
+        # Überprüfen, ob relevante Ergebnisse gefunden wurden
+        if not unstructured_results or all(res.similarity_score < 0.75 for res in unstructured_results):
+            # Keine relevanten Ergebnisse gefunden
+            disclaimer = (
+                "Die folgende Antwort basiert nicht auf dem Buch 'Mainzer Kartenlosbuch', "
+                "da die gesuchte Information dort nicht gefunden wurde."
+            )
+            generated_response = llm(question)  # LLM nutzt allgemeines Wissen zur Beantwortung
+            return f"{disclaimer}\n\n{generated_response}"
+
+        # Kontext aus den Ergebnissen extrahieren
         context = "\n".join([res.page_content for res in unstructured_results])
+
+        # Prompt vorbereiten
         prompt = ChatPromptTemplate.from_template("""
-            Hier ist der Kontext aus dem Buch 'Mainzer Kartenlosbuch':
+            Basierend auf dem folgenden Buchinhalt:
             {context}
 
             Frage: {question}
-            Antwort:
+            Antwort (nur basierend auf dem Buch):
         """)
         answer_chain = LLMChain(prompt=prompt, llm=llm)
         return answer_chain.run(context=context, question=question)
+
     except Exception as e:
-        raise ValueError(f"Fehler bei der Beantwortung der Frage: {e}")
+        return f"Fehler bei der Beantwortung der Frage: {e}"
 
 
 # %% Streamlit UI
