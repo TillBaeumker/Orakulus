@@ -1,7 +1,6 @@
 # %% Imports
 import streamlit as st
 import json
-import random
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
@@ -55,66 +54,39 @@ try:
 except Exception as e:
     raise ValueError(f"Fehler bei der Initialisierung des Vektor-Retrievers: {e}")
 
-# %% Erweiterte Kontextsuche
+# Neue Funktion: Kontext aus dem Neo4j-Graphen abrufen
 def retrieve_graph_context(question):
     """
-    Ruft kontextbezogene Daten aus dem Neo4j-Graphen ab.
-    Nutzt sowohl Full-Text-Suche als auch Vektor-Suche.
+    Sucht nach relevanten Inhalten im Neo4j-Graphen basierend auf der Frage.
     """
     try:
-        query = """
-        CALL db.index.fulltext.queryNodes('entity', $query)
-        YIELD node, score
-        RETURN node.id AS entity, score
-        LIMIT 5
-        """
-        full_text_results = neo4j_driver.session().run(query, query=question).data()
-
-        vector_results = vector_index.similarity_search(question)
-        combined_results = set(
-            [result["entity"] for result in full_text_results]
-            + [res.page_content for res in vector_results]
-        )
-        return "\n".join(combined_results)
+        results = vector_index.similarity_search(question)
+        if results:
+            contexts = [res.page_content.strip() for res in results]
+            return "\n\n".join(contexts)
+        else:
+            return ""
     except Exception as e:
-        return f"Fehler beim Abrufen von Daten aus dem Graphen: {e}"
+        return f"Fehler bei der Suche im Graphen: {e}"
 
-# %% Losbuch-Daten abrufen
-def get_losbuch_details(symbol):
-    """
-    Ruft Details zu einem spezifischen Symbol aus dem Neo4j-Graphen ab.
-    """
-    try:
-        query = """
-        MATCH (los:Los {symbol: $symbol})
-        RETURN los.symbol AS symbol,
-               los.original_weissagung AS original,
-               los.hochdeutsch_weissagung AS hochdeutsch,
-               los.deutung AS deutung,
-               los.image_path AS image_path
-        LIMIT 1
-        """
-        result = neo4j_driver.session().run(query, symbol=symbol).data()
-        return result[0] if result else None
-    except Exception as e:
-        return f"Fehler beim Abrufen der Losbuch-Daten: {e}"
-
-# %% Fragen basierend auf dem Graphen beantworten
+# Funktion: Antworten basierend auf Graph-Daten generieren
 def answer_question_from_graph_with_llm(question):
     """
-    Beantwortet Fragen basierend auf Daten aus dem Neo4j-Graphen und formuliert
-    eine klare, verständliche Antwort mithilfe des LLM.
+    Beantwortet Fragen basierend auf Daten aus dem Neo4j-Graphen.
     """
     try:
+        # Kontext aus Graph-Daten abrufen
         graph_context = retrieve_graph_context(question)
 
-        if graph_context:
+        if graph_context.strip():  # Nur fortfahren, wenn Kontext vorhanden
+            # Antwort basierend auf Graph-Daten generieren
             prompt_template = ChatPromptTemplate.from_template("""
-                Hier sind die Informationen aus dem Graphen:
+                Nutze ausschließlich die folgenden Informationen, um eine Antwort zu generieren:
                 {context}
 
-                Formuliere eine klare und prägnante Antwort auf die folgende Frage:
-                {question}
+                Frage: {question}
+
+                Antworte präzise und klar.
             """)
             chain = LLMChain(llm=llm, prompt=prompt_template)
             return chain.run(context=graph_context, question=question)
@@ -123,7 +95,22 @@ def answer_question_from_graph_with_llm(question):
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
 
-# %% UI-Anpassungen
+# Funktion: Antworten direkt aus Graph-Daten
+def answer_question_from_graph(question):
+    """
+    Gibt ausschließlich Informationen aus dem Neo4j-Graphen zurück.
+    """
+    try:
+        graph_context = retrieve_graph_context(question)
+
+        if graph_context.strip():
+            return f"Antwort basierend auf dem Neo4j-Graphen:\n\n{graph_context}"
+        else:
+            return "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden."
+    except Exception as e:
+        return f"Fehler bei der Beantwortung der Frage: {e}"
+
+# Anpassung der Streamlit-UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
 
 # Auswahl der Modus
@@ -144,17 +131,12 @@ elif mode == "Losbuch spielen":
     st.subheader("Ziehe ein Los!")
     if st.button("Los ziehen"):
         try:
-            # Generiere ein zufälliges Symbol
-            random_symbol = random.choice(["Symbol1", "Symbol2", "Symbol3"])  # Beispiel
-            los = get_losbuch_details(random_symbol)
-            if los:
-                st.write(f"**Symbol**: {los['symbol']}")
-                st.write(f"**Weissagung (Original)**: {los['original']}")
-                st.write(f"**Weissagung (Hochdeutsch)**: {los['hochdeutsch']}")
-                st.write(f"**Deutung**: {los['deutung']}")
-                st.image(los['image_path'])
-            else:
-                st.write("Keine Daten für das Los gefunden.")
+            los = ziehe_random_karte()
+            st.write(f"**Symbol**: {los['symbol']}")
+            st.write(f"**Weissagung (Original)**: {los['original_weissagung']}")
+            st.write(f"**Weissagung (Hochdeutsch)**: {los['hochdeutsch_weissagung']}")
+            st.write(f"**Deutung**: {los['deutung']}")
+            st.image(los['image_path'])
         except Exception as e:
             st.error(f"Fehler: {e}")
 
