@@ -61,31 +61,32 @@ except Exception as e:
 # %% Funktionen zur Verarbeitung
 def answer_general_question(question):
     """
-    Beantwortet allgemeine Fragen. Fügt einen Disclaimer hinzu, falls die Informationen
-    nicht aus dem Buch 'Mainzer Kartenlosbuch' stammen.
+    Beantwortet allgemeine Fragen mit einer prägnanten Antwort, basierend auf dem Buch,
+    und fügt einen Disclaimer hinzu, wenn die Informationen nicht explizit aus dem Buch stammen.
     """
     disclaimer = (
-        "Hinweis: Diese Antwort basiert nicht auf dem Buch "
+        "Hinweis: Diese Antwort basiert nicht vollständig auf dem Buch "
         "'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, "
         "gedruckt von Johann Schöffer, Mainz um 1510. Herausgegeben von Matthias Däumer, "
         "S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts'."
     )
 
-    # Prüfe auf spezifische Fragen zum Mainzer Kartenlosbuch
-    keywords = ["Mainzer Kartenlosbuch", "losz buch ausz der karten", "Johann Schöffer"]
-    if any(keyword.lower() in question.lower() for keyword in keywords):
-        # Kontext aus Neo4j laden
-        try:
-            unstructured_results = vector_index.similarity_search(question)
-            if unstructured_results:
-                context = "\n".join([res.page_content for res in unstructured_results])
-                return f"Antwort basierend auf dem Buch:\n\n{context}"
-            else:
-                return "Das Buch enthält keine spezifischen Informationen zu dieser Frage."
-        except Exception as e:
-            return f"Fehler bei der Verarbeitung der Buchinhalte: {e}"
+    # Suche nach Informationen in Neo4j
+    try:
+        unstructured_results = vector_index.similarity_search(question)
+        if unstructured_results:
+            # Kompakte Antwort generieren aus den Suchergebnissen
+            context = "\n".join([res.page_content for res in unstructured_results[:3]])
+            return f"Antwort basierend auf dem Buch:\n\n{context[:500]}...\n\nHinweis: Die Informationen wurden aus relevanten Passagen des Buches abgeleitet."
+        else:
+            return (
+                f"Antwort basierend auf dem Buch:\n\n"
+                "Leider enthält das Buch keine direkten Informationen zu Ihrer Frage."
+            )
+    except Exception as e:
+        return f"Fehler bei der Verarbeitung der Buchinhalte: {e}"
 
-    # Generiere allgemeine Antworten für andere Fragen
+    # Generiere allgemeine Antworten, falls keine Buchinformationen gefunden werden
     try:
         response = llm(f"Beantworte die folgende Frage: '{question}'")
         return f"{disclaimer}\n\nAntwort: {response}"
