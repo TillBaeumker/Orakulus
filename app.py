@@ -66,7 +66,7 @@ def answer_general_question(question):
         unstructured_results = vector_index.similarity_search(question)
 
         # Überprüfen, ob relevante Ergebnisse gefunden wurden
-        if not unstructured_results or all(res.similarity_score < 0.75 for res in unstructured_results):
+        if not unstructured_results:
             # Keine relevanten Ergebnisse gefunden
             disclaimer = (
                 "Die folgende Antwort basiert nicht auf dem Buch 'Mainzer Kartenlosbuch', "
