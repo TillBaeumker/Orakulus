@@ -61,8 +61,8 @@ except Exception as e:
 # %% Funktionen zur Verarbeitung
 def answer_general_question(question):
     """
-    Beantwortet allgemeine Fragen mit klaren Disclaimern, ob die Informationen aus dem Buch
-    'Mainzer Kartenlosbuch' stammen oder generativ erstellt wurden.
+    Beantwortet allgemeine Fragen mit Disclaimern, ob die Informationen aus dem Buch
+    'Mainzer Kartenlosbuch' oder generativ erstellt wurden.
     """
     try:
         # Unstrukturierte Suche im Vektor-Index
@@ -72,7 +72,7 @@ def answer_general_question(question):
             # Kontext aus den Suchergebnissen extrahieren
             context = "\n".join([res.page_content for res in unstructured_results])
 
-            # Generative KI-basierte Antwort erstellen
+            # Generative Antwort basierend auf dem Buchkontext
             prompt = ChatPromptTemplate.from_template("""
                 Hier ist der Kontext:
                 {context}
@@ -83,14 +83,14 @@ def answer_general_question(question):
             answer_chain = LLMChain(prompt=prompt, llm=llm)
             answer = answer_chain.run(context=context, question=question).strip()
 
-            # Antwort mit Disclaimer für Inhalte aus dem Buch
+            # Antwort mit Buch-Disclaimer
             return (
                 f"Antwort basierend auf dem Buch 'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, "
                 f"gedruckt von Johann Schöffer, Mainz um 1510. Herausgegeben von Matthias Däumer, S. Hirzel Verlag, 2021':\n\n"
                 f"{answer}"
             )
         else:
-            # Generative Antwort ohne Buchkontext mit Disclaimer
+            # Generative Antwort ohne Buchkontext
             generated_answer = llm(f"Bitte beantworte diese Frage: {question}").strip()
             return (
                 f"Antwort: Diese Informationen stammen nicht aus dem Buch 'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, "
