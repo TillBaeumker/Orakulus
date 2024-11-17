@@ -64,6 +64,12 @@ def answer_general_question(question):
     Beantwortet allgemeine Fragen. Fügt einen Disclaimer hinzu, falls die Informationen
     nicht aus dem Buch 'Mainzer Kartenlosbuch' stammen.
     """
+    disclaimer = (
+        "Hinweis: Diese Antwort basiert nicht auf dem Buch "
+        "'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, "
+        "gedruckt von Johann Schöffer, Mainz um 1510. Herausgegeben von Matthias Däumer, "
+        "S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts'."
+    )
     try:
         # Suche im Neo4j-Vektorindex nach relevanten Textpassagen
         unstructured_results = vector_index.similarity_search(question)
@@ -79,22 +85,14 @@ def answer_general_question(question):
                 Antwort:
             """)
             answer_chain = LLMChain(prompt=prompt, llm=llm)
-            return answer_chain.run(context=context, question=question)
+            response = answer_chain.run(context=context, question=question)
+            return f"{disclaimer}\n\nAntwort: {response}"
         else:
             # Generiere Antwort, wenn keine relevanten Textpassagen im Buch gefunden wurden
             response = llm(f"Beantworte die folgende Frage: '{question}'")
-            disclaimer = (
-                "Hinweis: Diese Antwort basiert nicht auf dem Buch "
-                "'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, "
-                "gedruckt von Johann Schöffer, Mainz um 1510. Herausgegeben von Matthias Däumer, "
-                "S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts'."
-            )
             return f"{disclaimer}\n\nAntwort: {response}"
     except Exception as e:
-        return f"Fehler bei der Beantwortung der Frage: {e}"
-
-
-
+        return f"{disclaimer}\n\nFehler bei der Beantwortung der Frage: {e}"
 
 # %% Streamlit UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
