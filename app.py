@@ -65,11 +65,11 @@ def answer_general_question(question):
     nicht aus dem Buch 'Mainzer Kartenlosbuch' stammen.
     """
     try:
-        # Unstrukturierte Suche im Vektor-Index
+        # Suche im Neo4j-Vektorindex nach relevanten Textpassagen
         unstructured_results = vector_index.similarity_search(question)
 
-        # Wenn es Ergebnisse gibt, Kontext aus diesen generieren
         if unstructured_results:
+            # Kontext aus gefundenen Passagen erstellen
             context = "\n".join([res.page_content for res in unstructured_results])
             prompt = ChatPromptTemplate.from_template("""
                 Hier ist der Kontext:
@@ -81,7 +81,7 @@ def answer_general_question(question):
             answer_chain = LLMChain(prompt=prompt, llm=llm)
             return answer_chain.run(context=context, question=question)
         else:
-            # Generiere Antwort auf die Frage
+            # Generiere Antwort, wenn keine relevanten Textpassagen im Buch gefunden wurden
             response = llm(f"Beantworte die folgende Frage: '{question}'")
             disclaimer = (
                 "Hinweis: Diese Antwort basiert nicht auf dem Buch "
@@ -92,6 +92,7 @@ def answer_general_question(question):
             return f"{disclaimer}\n\nAntwort: {response}"
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
+
 
 
 
