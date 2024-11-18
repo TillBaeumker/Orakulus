@@ -23,7 +23,7 @@ def connect_to_neo4j(uri, username, password):
     except Exception as e:
         raise ValueError(f"Fehler bei der Verbindung mit Neo4j: {e}")
 
-graph = connect_to_neo4j(uri=neo4j_uri, auth=(neo4j_username, neo4j_password))
+graph = connect_to_neo4j(uri=neo4j_uri, neo4j_username, neo4j_password)
 
 # OpenAI-LLM initialisieren
 llm = ChatOpenAI(temperature=0, model_name="gpt-4o-mini", openai_api_key=openai_api_key)
