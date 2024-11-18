@@ -1,11 +1,11 @@
 # %% Imports
 import streamlit as st
-import json
 import random
+import json
+from neo4j import GraphDatabase
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
-from neo4j import GraphDatabase
 from langchain_community.vectorstores import Neo4jVector
 from langchain_openai import OpenAIEmbeddings
 
@@ -14,6 +14,10 @@ openai_api_key = st.secrets["OPENAI_API_KEY"]
 neo4j_uri = st.secrets["NEO4J_URI"]
 neo4j_username = st.secrets["NEO4J_USERNAME"]
 neo4j_password = st.secrets["NEO4J_PASSWORD"]
+
+# JSON-Datei mit Losbuch-Daten laden
+with open("data_karten.json", "r", encoding="utf-8") as f:
+    losbuch_data = json.load(f)["kartenlosbuch"]
 
 # OpenAI-LLM initialisieren
 llm = ChatOpenAI(temperature=0, model_name="gpt-4o-mini", openai_api_key=openai_api_key)
@@ -50,7 +54,7 @@ try:
 except Exception as e:
     st.error(f"Fehler bei der Initialisierung des Vektor-Retrievers: {e}")
 
-# Kontext aus Neo4j abrufen
+# Allgemeiner Modus: Kontext aus Neo4j abrufen
 def retrieve_graph_context(question):
     """
     Sucht relevante Inhalte im Neo4j-Graphen basierend auf der Frage.
@@ -60,11 +64,11 @@ def retrieve_graph_context(question):
         if results:
             return "\n\n".join([res.page_content.strip() for res in results])
         else:
-            return ""
+            return "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden."
     except Exception as e:
         return f"Fehler bei der Suche im Graphen: {e}"
 
-# Frage basierend auf dem Graph beantworten
+# Allgemeiner Modus: Frage basierend auf dem Graph beantworten
 def answer_question_from_graph_with_llm(question):
     """
     Beantwortet eine Frage, indem der Kontext aus dem Neo4j-Graph verwendet wird.
@@ -72,12 +76,14 @@ def answer_question_from_graph_with_llm(question):
     try:
         graph_context = retrieve_graph_context(question)
         if graph_context.strip():
-            prompt_template = ChatPromptTemplate.from_template("""Nutze ausschließlich die im Graphen enthaltenen Informationen, um eine Antwort zu generieren:
+            prompt_template = ChatPromptTemplate.from_template("""
+                Nutze ausschließlich die im Graphen enthaltenen Informationen, um eine Antwort zu generieren:
                 {context}
 
                 Frage: {question}
 
-                Antworte präzise und klar.""")
+                Antworte präzise und klar.
+            """)
             chain = LLMChain(llm=llm, prompt=prompt_template)
             return chain.run(context=graph_context, question=question)
         else:
@@ -85,40 +91,24 @@ def answer_question_from_graph_with_llm(question):
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
 
-# JSON-basierte Funktion für "Losbuch spielen"
-json_file_path = "data_karten.json"
-
-def load_losbuch_data(file_path):
+# Losbuch-Modus: Zufälliges Los ziehen
+def ziehe_random_karte():
     """
-    Lädt die Daten des Kartenlosbuchs aus der JSON-Datei.
+    Wählt zufällig ein Los aus der JSON-Datei.
     """
     try:
-        with open(file_path, "r", encoding="utf-8") as file:
-            data = json.load(file)
-        return data.get("kartenlosbuch", [])
+        los = random.choice(losbuch_data)
+        weissagung_hochdeutsch = llm.predict(
+            f"Übersetze die folgende Weissagung in Hochdeutsch:\n\n{los['weissagung']}"
+        )
+        return {
+            "symbol": los["symbol"],
+            "weissagung": los["weissagung"],
+            "hochdeutsch_weissagung": weissagung_hochdeutsch.strip(),
+            "image_path": los["image_path"]
+        }
     except Exception as e:
-        st.error(f"Fehler beim Laden der JSON-Datei: {e}")
-        return []
-
-def translate_to_hochdeutsch(weissagung):
-    """
-    Übersetzt die Weissagung auf Hochdeutsch mithilfe von GPT-4o-mini.
-    """
-    try:
-        prompt = f"Übersetze den folgenden mittelalterlichen Text ins Hochdeutsche:\n\n{weissagung}"
-        response = llm.predict(prompt)
-        return response.strip()
-    except Exception as e:
-        st.error(f"Fehler bei der Übersetzung: {e}")
-        return "Fehler bei der Übersetzung."
-
-def ziehe_random_karte(data):
-    """
-    Wählt zufällig ein Los aus den JSON-Daten.
-    """
-    if not data:
-        return None
-    return random.choice(data)
+        return {"error": str(e)}
 
 # Streamlit-UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
@@ -139,15 +129,15 @@ if mode == "Allgemeine Fragen":
 
 elif mode == "Losbuch spielen":
     st.subheader("Ziehe ein Los!")
-    losbuch_data = load_losbuch_data(json_file_path)
-
     if st.button("Los ziehen"):
-        los = ziehe_random_karte(losbuch_data)
-        if los:
-            st.image(los["image_path"], caption=f"Symbol: {los['symbol']}")
-            st.write(f"**Original-Weissagung:**\n{los['weissagung']}")
-
-            hochdeutsch_weissagung = translate_to_hochdeutsch(los["weissagung"])
-            st.write(f"**Weissagung (Hochdeutsch):**\n{hochdeutsch_weissagung}")
+        los = ziehe_random_karte()
+        if los and "error" not in los:
+            st.write(f"**Symbol**: {los['symbol']}")
+            st.write(f"**Weissagung (Original)**: {los['weissagung']}")
+            st.write(f"**Weissagung (Hochdeutsch)**: {los['hochdeutsch_weissagung']}")
+            if los.get("image_path"):
+                st.image(los["image_path"])
+        elif los and "error" in los:
+            st.error(f"Fehler beim Ziehen des Loses: {los['error']}")
         else:
             st.error("Es konnte kein Los gezogen werden.")
