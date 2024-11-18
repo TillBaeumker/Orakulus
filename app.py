@@ -17,13 +17,13 @@ neo4j_password = st.secrets["NEO4J_PASSWORD"]
 # Verbindung zu Neo4j herstellen
 def connect_to_neo4j(uri, username, password):
     try:
-        graph = Neo4jGraph(uri=uri, auth=(neo4j_username, neo4j_password))
+        graph = Neo4jGraph(uri=neo4j_uri, auth=(neo4j_username, neo4j_password))
         print("Verbindung zu Neo4j erfolgreich hergestellt.")
         return graph
     except Exception as e:
         raise ValueError(f"Fehler bei der Verbindung mit Neo4j: {e}")
 
-graph = connect_to_neo4j(uri=uri, auth=(neo4j_username, neo4j_password))
+graph = connect_to_neo4j(uri=neo4j_uri, auth=(neo4j_username, neo4j_password))
 
 # OpenAI-LLM initialisieren
 llm = ChatOpenAI(temperature=0, model_name="gpt-4o-mini", openai_api_key=openai_api_key)
