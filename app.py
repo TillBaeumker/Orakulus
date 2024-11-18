@@ -17,7 +17,7 @@ neo4j_password = st.secrets["NEO4J_PASSWORD"]
 # Verbindung zu Neo4j herstellen
 def connect_to_neo4j(uri, username, password):
     try:
-        graph = Neo4jGraph(uri=uri, auth=(username, password))
+        graph = Neo4jGraph(uri, auth=(username, password))
         print("Verbindung zu Neo4j erfolgreich hergestellt.")
         return graph
     except Exception as e:
