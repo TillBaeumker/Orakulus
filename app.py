@@ -60,7 +60,7 @@ def answer_question_from_graph_with_llm(question):
         graph_context = retrieve_graph_context(question)
         if graph_context.strip():
             prompt_template = ChatPromptTemplate.from_template("""
-                Nutze ausschließlich die folgenden Informationen, um eine Antwort zu generieren:
+                Nutze ausschließlich die im Graphen enthaltenen Informationen, um eine Antwort zu generieren. Fragen, deren Antwort nicht im Graphen enthalten sind, beantwortest du nicht.:
                 {context}
 
                 Frage: {question}
@@ -133,4 +133,3 @@ elif mode == "Losbuch spielen":
                 st.image(los["image_path"])
         else:
             st.error("Es konnte kein Los gezogen werden.")
-
