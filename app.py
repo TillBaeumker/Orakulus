@@ -14,12 +14,18 @@ neo4j_uri = st.secrets["NEO4J_URI"]
 neo4j_username = st.secrets["NEO4J_USERNAME"]
 neo4j_password = st.secrets["NEO4J_PASSWORD"]
 
-# Verbindung zu Neo4j herstellen
+# URI der Neo4j-Datenbank und Auth-Details aus den Secrets
+URI = neo4j_uri  # Ersetze dies mit deinem tatsächlichen URI
+AUTH = (neo4j_username, neo4j_password)  # Ersetze mit deinem Benutzernamen und Passwort
+
 try:
-    graph = Neo4jGraph(URI=neo4j_uri, username=neo4j_username, password=neo4j_password)
-    print("Verbindung zu Neo4j erfolgreich hergestellt.")
+    # Driver-Objekt erstellen
+    with GraphDatabase.driver(URI, auth=AUTH) as driver:
+        # Verbindung testen
+        driver.verify_connectivity()
+        print("Verbindung erfolgreich hergestellt.")
 except Exception as e:
-    raise ValueError(f"Fehler bei der Verbindung mit Neo4j: {e}")
+    print(f"Fehler bei der Verbindung mit Neo4j: {e}")
 
 # OpenAI-LLM initialisieren
 llm = ChatOpenAI(temperature=0, model_name="gpt-4o-mini", openai_api_key=openai_api_key)
