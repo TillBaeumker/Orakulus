@@ -1,9 +1,11 @@
 # %% Imports
 import streamlit as st
-from neo4j import GraphDatabase
+import json
+import random
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
+from neo4j import GraphDatabase
 from langchain_community.vectorstores import Neo4jVector
 from langchain_openai import OpenAIEmbeddings
 
@@ -70,14 +72,12 @@ def answer_question_from_graph_with_llm(question):
     try:
         graph_context = retrieve_graph_context(question)
         if graph_context.strip():
-            prompt_template = ChatPromptTemplate.from_template("""
-                Nutze ausschließlich die im Graphen enthaltenen Informationen, um eine Antwort zu generieren:
+            prompt_template = ChatPromptTemplate.from_template("""Nutze ausschließlich die im Graphen enthaltenen Informationen, um eine Antwort zu generieren:
                 {context}
 
                 Frage: {question}
 
-                Antworte präzise und klar.
-            """)
+                Antworte präzise und klar.""")
             chain = LLMChain(llm=llm, prompt=prompt_template)
             return chain.run(context=graph_context, question=question)
         else:
@@ -85,35 +85,40 @@ def answer_question_from_graph_with_llm(question):
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
 
-# Losbuch-Funktion
-def ziehe_random_karte():
+# JSON-basierte Funktion für "Losbuch spielen"
+json_file_path = "data_karten.json"
+
+def load_losbuch_data(file_path):
     """
-    Wählt zufällig ein Los aus den gespeicherten Daten im Neo4j-Graphen.
-    """
-    query = """
-    MATCH (l:Los)
-    RETURN l.symbol AS symbol, l.original_weissagung AS original_weissagung,
-           l.hochdeutsch_weissagung AS hochdeutsch_weissagung,
-           l.deutung AS deutung, l.image_path AS image_path
-    ORDER BY rand()
-    LIMIT 1
+    Lädt die Daten des Kartenlosbuchs aus der JSON-Datei.
     """
     try:
-        with neo4j_driver.session() as session:
-            result = session.run(query)
-            record = result.single()
-            if record:
-                return {
-                    "symbol": record.get("symbol", "Unbekanntes Symbol"),
-                    "original_weissagung": record.get("original_weissagung", "Keine Weissagung vorhanden."),
-                    "hochdeutsch_weissagung": record.get("hochdeutsch_weissagung", "Keine Hochdeutsch-Weissagung vorhanden."),
-                    "deutung": record.get("deutung", "Keine Deutung verfügbar."),
-                    "image_path": record.get("image_path", None)
-                }
-            else:
-                return {"error": "Es konnten keine Lose gefunden werden."}
+        with open(file_path, "r", encoding="utf-8") as file:
+            data = json.load(file)
+        return data.get("kartenlosbuch", [])
     except Exception as e:
-        return {"error": str(e)}
+        st.error(f"Fehler beim Laden der JSON-Datei: {e}")
+        return []
+
+def translate_to_hochdeutsch(weissagung):
+    """
+    Übersetzt die Weissagung auf Hochdeutsch mithilfe von GPT-4o-mini.
+    """
+    try:
+        prompt = f"Übersetze den folgenden mittelalterlichen Text ins Hochdeutsche:\n\n{weissagung}"
+        response = llm.predict(prompt)
+        return response.strip()
+    except Exception as e:
+        st.error(f"Fehler bei der Übersetzung: {e}")
+        return "Fehler bei der Übersetzung."
+
+def ziehe_random_karte(data):
+    """
+    Wählt zufällig ein Los aus den JSON-Daten.
+    """
+    if not data:
+        return None
+    return random.choice(data)
 
 # Streamlit-UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
@@ -134,16 +139,15 @@ if mode == "Allgemeine Fragen":
 
 elif mode == "Losbuch spielen":
     st.subheader("Ziehe ein Los!")
+    losbuch_data = load_losbuch_data(json_file_path)
+
     if st.button("Los ziehen"):
-        los = ziehe_random_karte()
-        if los and "error" not in los:
-            st.write(f"**Symbol**: {los['symbol']}")
-            st.write(f"**Weissagung (Original)**: {los['original_weissagung']}")
-            st.write(f"**Weissagung (Hochdeutsch)**: {los['hochdeutsch_weissagung']}")
-            st.write(f"**Deutung**: {los['deutung']}")
-            if los.get("image_path"):
-                st.image(los["image_path"])
-        elif los and "error" in los:
-            st.error(f"Fehler beim Ziehen des Loses: {los['error']}")
+        los = ziehe_random_karte(losbuch_data)
+        if los:
+            st.image(los["image_path"], caption=f"Symbol: {los['symbol']}")
+            st.write(f"**Original-Weissagung:**\n{los['weissagung']}")
+
+            hochdeutsch_weissagung = translate_to_hochdeutsch(los["weissagung"])
+            st.write(f"**Weissagung (Hochdeutsch):**\n{hochdeutsch_weissagung}")
         else:
             st.error("Es konnte kein Los gezogen werden.")
