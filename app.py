@@ -144,7 +144,7 @@ elif mode == "Losbuch spielen":
         los = ziehe_random_karte()
         if los and "error" not in los:
             if los.get("image_path"):
-                st.image(los["image_path"], caption=los["symbol"], use_column_width=True)
+                st.image(los["image_path"], caption=los["symbol"], width=300)
             st.write(f"**Weissagung**:\n\n{los['weissagung']}")
             st.write(f"**Weissagung (Neuhochdeutsch)**:\n\n{los['neuhochdeutsch_weissagung']}")
         elif los and "error" in los:
