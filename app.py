@@ -103,7 +103,7 @@ def ziehe_random_karte():
     try:
         los = random.choice(losbuch_data)
         weissagung_hochdeutsch = llm.predict(
-            f"Übersetze die folgende Weissagung in Hochdeutsch:\n\n{los['weissagung']}"
+            f"Übersetze die folgende Weissagung in Neuhochdeutsch:\n\n{los['weissagung']}"
         )
         
         # Überprüfen, ob der Pfad korrekt ist
@@ -119,7 +119,7 @@ def ziehe_random_karte():
         return {
             "symbol": los["symbol"],
             "weissagung": los["weissagung"],
-            "hochdeutsch_weissagung": weissagung_hochdeutsch.strip(),
+            "neuhochdeutsch_weissagung": weissagung_hochdeutsch.strip(),
             "image_path": image_path
         }
     except Exception as e:
@@ -147,11 +147,11 @@ elif mode == "Losbuch spielen":
     if st.button("Los ziehen"):
         los = ziehe_random_karte()
         if los and "error" not in los:
-            st.write(f"**Symbol**: {los['symbol']}")
-            st.write(f"**Weissagung (Original)**: {los['weissagung']}")
-            st.write(f"**Weissagung (Hochdeutsch)**: {los['hochdeutsch_weissagung']}")
             if los.get("image_path"):
                 st.image(los["image_path"])
+            st.write(f"**Symbol**: {los['symbol']}")
+            st.write(f"**Weissagung (Original)**:\n\n{los['weissagung']}")
+            st.write(f"**Weissagung (Neuhochdeutsch)**:\n\n{los['neuhochdeutsch_weissagung']}")
         elif los and "error" in los:
             st.error(f"Fehler beim Ziehen des Loses: {los['error']}")
         else:
