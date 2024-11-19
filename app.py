@@ -2,6 +2,7 @@
 import streamlit as st
 import random
 import json
+import os
 from neo4j import GraphDatabase
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
@@ -14,6 +15,9 @@ openai_api_key = st.secrets["OPENAI_API_KEY"]
 neo4j_uri = st.secrets["NEO4J_URI"]
 neo4j_username = st.secrets["NEO4J_USERNAME"]
 neo4j_password = st.secrets["NEO4J_PASSWORD"]
+
+# Pfad zu den extrahierten Bildern
+image_directory = "extracted_images"
 
 # JSON-Datei mit Losbuch-Daten laden
 with open("data_karten.json", "r", encoding="utf-8") as f:
@@ -101,11 +105,15 @@ def ziehe_random_karte():
         weissagung_hochdeutsch = llm.predict(
             f"Übersetze die folgende Weissagung in Hochdeutsch:\n\n{los['weissagung']}"
         )
+        # Bildpfad überprüfen
+        image_path = os.path.join(image_directory, los["image_path"])
+        if not os.path.exists(image_path):
+            raise FileNotFoundError(f"Bild konnte nicht gefunden werden: {image_path}")
         return {
             "symbol": los["symbol"],
             "weissagung": los["weissagung"],
             "hochdeutsch_weissagung": weissagung_hochdeutsch.strip(),
-            "image_path": los["image_path"]
+            "image_path": image_path
         }
     except Exception as e:
         return {"error": str(e)}
@@ -135,8 +143,7 @@ elif mode == "Losbuch spielen":
             st.write(f"**Symbol**: {los['symbol']}")
             st.write(f"**Weissagung (Original)**: {los['weissagung']}")
             st.write(f"**Weissagung (Hochdeutsch)**: {los['hochdeutsch_weissagung']}")
-            if los.get("image_path"):
-                st.image(los["image_path"])
+            st.image(los["image_path"])
         elif los and "error" in los:
             st.error(f"Fehler beim Ziehen des Loses: {los['error']}")
         else:
