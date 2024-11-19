@@ -82,7 +82,11 @@ def answer_question_from_graph_with_llm(question):
                 {context}
                 
                 Wenn die Frage nicht im Kontext beantwortet werden kann, gib die folgende Antwort zurück:
-                "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden."
+                "Eingehende Anfragen müssen sich auf Informationen in:
+
+                Däumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.
+
+                beziehen."
 
                 Frage: {question}
 
@@ -90,11 +94,11 @@ def answer_question_from_graph_with_llm(question):
             """)
             chain = LLMChain(llm=llm, prompt=prompt_template)
             answer = chain.run(context=graph_context, question=question)
-            if "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden" in answer:
-                return "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden."
+            if "Eingehende Anfragen müssen sich auf Informationen in:" in answer:
+                return "Eingehende Anfragen müssen sich auf Informationen in:\n\nDäumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.\n\nbeziehen."
             return answer.strip()
         else:
-            return "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden."
+            return "Eingehende Anfragen müssen sich auf Informationen in:\n\nDäumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.\n\nbeziehen."
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
 
