@@ -144,7 +144,15 @@ elif mode == "Losbuch spielen":
         los = ziehe_random_karte()
         if los and "error" not in los:
             if los.get("image_path"):
-                st.image(los["image_path"], caption=los["symbol"], width=300)
+                # Verwende HTML und CSS, um das Bild kleiner und mittig anzuzeigen
+                st.markdown(
+                    f"""
+                    <div style="text-align: center;">
+                        <img src="{los['image_path']}" alt="{los['symbol']}" style="width: 150px;">
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
             st.write(f"**Weissagung**:\n\n{los['weissagung']}")
             st.write(f"**Weissagung (Neuhochdeutsch)**:\n\n{los['neuhochdeutsch_weissagung']}")
         elif los and "error" in los:
