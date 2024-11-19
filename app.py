@@ -1,5 +1,4 @@
 # %% Imports
-import os
 import streamlit as st
 import random
 import json
@@ -15,9 +14,6 @@ openai_api_key = st.secrets["OPENAI_API_KEY"]
 neo4j_uri = st.secrets["NEO4J_URI"]
 neo4j_username = st.secrets["NEO4J_USERNAME"]
 neo4j_password = st.secrets["NEO4J_PASSWORD"]
-
-# Pfad zum Ordner für die Los-Bilder
-image_directory = "extracted_images"
 
 # JSON-Datei mit Losbuch-Daten laden
 with open("data_karten.json", "r", encoding="utf-8") as f:
@@ -68,7 +64,7 @@ def retrieve_graph_context(question):
         if results:
             return "\n\n".join([res.page_content.strip() for res in results])
         else:
-            return "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden."
+            return ""
     except Exception as e:
         return f"Fehler bei der Suche im Graphen: {e}"
 
@@ -81,15 +77,22 @@ def answer_question_from_graph_with_llm(question):
         graph_context = retrieve_graph_context(question)
         if graph_context.strip():
             prompt_template = ChatPromptTemplate.from_template("""
-                Nutze ausschließlich die im Graphen enthaltenen Informationen, um eine Antwort zu generieren:
+                Du bist ein Experte für das Mainzer Kartenlosbuch und darfst nur Informationen aus dem folgenden Kontext verwenden:
+                
                 {context}
+                
+                Wenn die Frage nicht im Kontext beantwortet werden kann, gib die folgende Antwort zurück:
+                "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden."
 
                 Frage: {question}
 
-                Antworte präzise und klar.
+                Antworte präzise und klar, ohne zusätzliche Informationen hinzuzufügen.
             """)
             chain = LLMChain(llm=llm, prompt=prompt_template)
-            return chain.run(context=graph_context, question=question)
+            answer = chain.run(context=graph_context, question=question)
+            if "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden" in answer:
+                return "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden."
+            return answer.strip()
         else:
             return "Es konnten keine relevanten Informationen im Neo4j-Graphen gefunden werden."
     except Exception as e:
@@ -105,22 +108,11 @@ def ziehe_random_karte():
         weissagung_hochdeutsch = llm.predict(
             f"Übersetze die folgende Weissagung in Neuhochdeutsch:\n\n{los['weissagung']}"
         )
-        
-        # Überprüfen, ob der Pfad korrekt ist
-        if os.path.isabs(los["image_path"]) or los["image_path"].startswith(image_directory):
-            image_path = los["image_path"]
-        else:
-            image_path = os.path.join(image_directory, los["image_path"])
-        
-        # Existenz des Bildes prüfen
-        if not os.path.exists(image_path):
-            raise FileNotFoundError(f"Bild konnte nicht gefunden werden: {image_path}")
-        
         return {
             "symbol": los["symbol"],
             "weissagung": los["weissagung"],
             "neuhochdeutsch_weissagung": weissagung_hochdeutsch.strip(),
-            "image_path": image_path
+            "image_path": los["image_path"]
         }
     except Exception as e:
         return {"error": str(e)}
@@ -148,9 +140,8 @@ elif mode == "Losbuch spielen":
         los = ziehe_random_karte()
         if los and "error" not in los:
             if los.get("image_path"):
-                st.image(los["image_path"])
-            st.write(f"**Symbol**: {los['symbol']}")
-            st.write(f"**Weissagung (Original)**:\n\n{los['weissagung']}")
+                st.image(los["image_path"], caption=los["symbol"], use_column_width=True)
+            st.write(f"**Weissagung**:\n\n{los['weissagung']}")
             st.write(f"**Weissagung (Neuhochdeutsch)**:\n\n{los['neuhochdeutsch_weissagung']}")
         elif los and "error" in los:
             st.error(f"Fehler beim Ziehen des Loses: {los['error']}")
