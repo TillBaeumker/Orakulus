@@ -19,40 +19,42 @@ neo4j_password = st.secrets["NEO4J_PASSWORD"]
 with open("data_karten.json", "r", encoding="utf-8") as f:
     losbuch_data = json.load(f)["kartenlosbuch"]
 
-# OpenAI-LLM initialisieren
-llm = ChatOpenAI(temperature=0, model_name="gpt-4o-mini", openai_api_key=openai_api_key)
-
-# Verbindung zu Neo4j-Datenbank
-def connect_to_neo4j(uri, username, password):
+# Initialisierung aller Ressourcen (Einmalig)
+def initialize_resources():
     """
-    Stellt eine Verbindung zur Neo4j-Datenbank her.
+    Initialisiert Neo4j, LLM und Vektorindex.
     """
     try:
-        driver = GraphDatabase.driver(uri, auth=(username, password))
+        # Neo4j-Verbindung herstellen
+        driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_username, neo4j_password))
         driver.verify_connectivity()
-        print("Verbindung zu Neo4j erfolgreich hergestellt.")
-        return driver
+
+        # LLM initialisieren
+        llm = ChatOpenAI(temperature=0, model_name="gpt-4o-mini", openai_api_key=openai_api_key)
+
+        # Neo4j Vector Index initialisieren
+        vector_index = Neo4jVector.from_existing_graph(
+            embedding=OpenAIEmbeddings(openai_api_key=openai_api_key),
+            search_type="hybrid",
+            node_label="Document",
+            text_node_properties=["text"],
+            embedding_node_property="embedding"
+        )
+
+        st.success("Ressourcen erfolgreich initialisiert.")
+        return driver, llm, vector_index
     except Exception as e:
-        raise ValueError(f"Fehler bei der Verbindung mit Neo4j: {e}")
+        st.error(f"Fehler bei der Initialisierung der Ressourcen: {e}")
+        st.stop()
 
-# Verbindung herstellen
-try:
-    neo4j_driver = connect_to_neo4j(neo4j_uri, neo4j_username, neo4j_password)
-except ValueError as e:
-    st.error(f"Fehler bei der Verbindung mit Neo4j: {e}")
-
-# Neo4j-Vektor-Retriever initialisieren
-try:
-    vector_index = Neo4jVector.from_existing_graph(
-        embedding=OpenAIEmbeddings(openai_api_key=openai_api_key),
-        search_type="hybrid",
-        node_label="Document",
-        text_node_properties=["text"],
-        embedding_node_property="embedding"
-    )
-    print("Neo4j Vector Index erfolgreich initialisiert.")
-except Exception as e:
-    st.error(f"Fehler bei der Initialisierung des Vektor-Retrievers: {e}")
+# Ressourcen in st.session_state speichern
+if "resources_initialized" not in st.session_state:
+    with st.spinner("Initialisiere Ressourcen, bitte warten..."):
+        neo4j_driver, llm, vector_index = initialize_resources()
+        st.session_state.neo4j_driver = neo4j_driver
+        st.session_state.llm = llm
+        st.session_state.vector_index = vector_index
+        st.session_state.resources_initialized = True
 
 # Allgemeiner Modus: Kontext aus Neo4j abrufen
 def retrieve_graph_context(question):
@@ -60,7 +62,7 @@ def retrieve_graph_context(question):
     Sucht relevante Inhalte im Neo4j-Graphen basierend auf der Frage.
     """
     try:
-        results = vector_index.similarity_search(question)
+        results = st.session_state.vector_index.similarity_search(question)
         if results:
             return "\n\n".join([res.page_content.strip() for res in results])
         else:
@@ -92,7 +94,7 @@ def answer_question_from_graph_with_llm(question):
 
                 Antworte präzise und klar, ohne zusätzliche Informationen hinzuzufügen.
             """)
-            chain = LLMChain(llm=llm, prompt=prompt_template)
+            chain = LLMChain(llm=st.session_state.llm, prompt=prompt_template)
             answer = chain.run(context=graph_context, question=question)
             if "Eingehende Anfragen müssen sich auf Informationen in:" in answer:
                 return "Eingehende Anfragen müssen sich auf Informationen in:\n\nDäumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.\n\nbeziehen."
@@ -109,7 +111,7 @@ def ziehe_random_karte():
     """
     try:
         los = random.choice(losbuch_data)
-        weissagung_hochdeutsch = llm.predict(
+        weissagung_hochdeutsch = st.session_state.llm.predict(
             f"Übersetze die folgende Weissagung in Neuhochdeutsch:\n\n{los['weissagung']}"
         )
         return {
