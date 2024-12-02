@@ -55,19 +55,6 @@ if "resources_initialized" not in st.session_state:
         st.session_state.llm = llm
         st.session_state.vector_index = vector_index
         st.session_state.resources_initialized = True
-        st.session_state.chat_history = []  # Initialisieren des Gesprächsverlaufs
-
-# Query Rewriting: Aktualisierung der Frage basierend auf Verlauf
-def rewrite_question(question):
-    """
-    Passt die Frage basierend auf dem Gesprächsverlauf an.
-    """
-    if st.session_state.chat_history:
-        last_question, last_answer = st.session_state.chat_history[-1]
-        if "sie" in question.lower() or "er" in question.lower():
-            entity = last_answer.split()[0]  # Einfacher Ansatz, um die letzte Entität zu extrahieren
-            return f"{question} ({entity})"
-    return question
 
 # Allgemeiner Modus: Kontext aus Neo4j abrufen
 def retrieve_graph_context(question):
@@ -89,8 +76,7 @@ def answer_question_from_graph_with_llm(question):
     Beantwortet eine Frage, indem der Kontext aus dem Neo4j-Graph verwendet wird.
     """
     try:
-        rewritten_question = rewrite_question(question)
-        graph_context = retrieve_graph_context(rewritten_question)
+        graph_context = retrieve_graph_context(question)
         if graph_context.strip():
             prompt_template = ChatPromptTemplate.from_template("""
                 Du bist ein Experte für das Mainzer Kartenlosbuch und darfst nur Informationen aus dem folgenden Kontext verwenden:
@@ -109,8 +95,7 @@ def answer_question_from_graph_with_llm(question):
                 Antworte präzise und klar, ohne zusätzliche Informationen hinzuzufügen.
             """)
             chain = LLMChain(llm=st.session_state.llm, prompt=prompt_template)
-            answer = chain.run(context=graph_context, question=rewritten_question)
-            st.session_state.chat_history.append((question, answer))  # Verlauf aktualisieren
+            answer = chain.run(context=graph_context, question=question)
             if "Eingehende Anfragen müssen sich auf Informationen in:" in answer:
                 return "Eingehende Anfragen müssen sich auf Informationen in:\n\nDäumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.\n\nbeziehen."
             return answer.strip()
@@ -118,6 +103,25 @@ def answer_question_from_graph_with_llm(question):
             return "Eingehende Anfragen müssen sich auf Informationen in:\n\nDäumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.\n\nbeziehen."
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
+
+# Losbuch-Modus: Zufälliges Los ziehen
+def ziehe_random_karte():
+    """
+    Wählt zufällig ein Los aus der JSON-Datei.
+    """
+    try:
+        los = random.choice(losbuch_data)
+        weissagung_hochdeutsch = st.session_state.llm.predict(
+            f"Übersetze die folgende Weissagung in Neuhochdeutsch:\n\n{los['weissagung']}"
+        )
+        return {
+            "symbol": los["symbol"],
+            "weissagung": los["weissagung"],
+            "neuhochdeutsch_weissagung": weissagung_hochdeutsch.strip(),
+            "image_path": los["image_path"]
+        }
+    except Exception as e:
+        return {"error": str(e)}
 
 # Streamlit-UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
