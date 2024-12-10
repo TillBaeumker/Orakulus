@@ -22,8 +22,11 @@ text_file_path = "extrahierter_text.txt"
 with open("data_karten.json", "r", encoding="utf-8") as f:
     losbuch_data = json.load(f)["kartenlosbuch"]
 
-# Initialisierung aller Ressourcen
+# Initialisierung aller Ressourcen (Einmalig)
 def initialize_resources():
+    """
+    Initialisiert Neo4j, LLM und Vektorindex.
+    """
     try:
         # Neo4j-Verbindung herstellen
         driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_username, neo4j_password))
@@ -47,7 +50,7 @@ def initialize_resources():
         st.error(f"Fehler bei der Initialisierung der Ressourcen: {e}")
         st.stop()
 
-# Ressourcen initialisieren und in Session-State speichern
+# Ressourcen in st.session_state speichern
 if "resources_initialized" not in st.session_state:
     with st.spinner("Initialisiere Ressourcen, bitte warten..."):
         neo4j_driver, llm, vector_index = initialize_resources()
@@ -56,34 +59,27 @@ if "resources_initialized" not in st.session_state:
         st.session_state.vector_index = vector_index
         st.session_state.resources_initialized = True
 
-# Unstrukturierte Daten abrufen
-def retrieve_unstructured_context(question):
-    try:
-        results = st.session_state.vector_index.similarity_search(question)
-        return "\n\n".join([res.page_content.strip() for res in results]) if results else ""
-    except Exception as e:
-        return f"Fehler bei der Suche in unstrukturierten Daten: {e}"
-
-# Strukturierte Daten abrufen
-def retrieve_structured_context(question):
+# Funktionen für den hybriden Ansatz
+def retrieve_structured_context(question, max_results=5):
+    """
+    Sucht strukturierte Daten im Neo4j-Graphen basierend auf der Frage und begrenzt die Ergebnisse.
+    """
     try:
         llm = st.session_state.llm
-        # Entitäten aus der Frage extrahieren
         entity_extraction_prompt = ChatPromptTemplate.from_template("""
-            Extrahiere alle relevanten Entitäten (Personen, Orte, Organisationen) aus der Frage:
+            Extrahiere relevante Entitäten (Personen, Orte, Organisationen) aus der Frage:
             {question}
         """)
         entity_chain = LLMChain(llm=llm, prompt=entity_extraction_prompt)
         entities = entity_chain.run(question=question)
 
-        # Abfrage in Neo4j für die extrahierten Entitäten
         graph_context = ""
-        for entity in entities.split(","):
+        for entity in entities.split(",")[:max_results]:  # Maximal `max_results` Entitäten
             query = f"""
             CALL db.index.fulltext.queryNodes('entity', '{entity.strip()}') YIELD node
             MATCH (node)-[r]->(neighbor)
             RETURN node.id + ' - ' + type(r) + ' -> ' + neighbor.id AS output
-            LIMIT 50
+            LIMIT 10
             """
             with st.session_state.neo4j_driver.session() as session:
                 results = session.run(query)
@@ -93,45 +89,60 @@ def retrieve_structured_context(question):
     except Exception as e:
         return f"Fehler bei der Suche in strukturierten Daten: {e}"
 
-# Hybrid-Kontext erstellen
-def hybrid_retrieve_context(question):
-    structured_context = retrieve_structured_context(question)
-    unstructured_context = retrieve_unstructured_context(question)
-    return f"""
-    Strukturierte Daten:
-    {structured_context}
-
-    Unstrukturierte Daten:
-    {unstructured_context}
-    """.strip()
-
-# Frage beantworten
-def answer_question_with_hybrid_context(question):
+def retrieve_unstructured_context(question, max_results=5):
     """
-    Beantwortet eine Frage basierend auf einem komprimierten hybriden Kontext.
+    Sucht unstrukturierte Daten basierend auf der Frage und begrenzt die Ergebnisse.
     """
     try:
-        hybrid_context = hybrid_retrieve_context(question, max_results=3)  # Max 3 relevante Ergebnisse
-        if hybrid_context.strip():
-            prompt_template = ChatPromptTemplate.from_template("""
-                Beantworte die folgende Frage basierend auf dem gegebenen Kontext (maximal 4000 Zeichen):
-                
-                {context}
-
-                Frage: {question}
-
-                Wenn die Frage nicht beantwortet werden kann, antworte:
-                "Die Antwort kann nicht aus dem gegebenen Kontext abgeleitet werden."
-            """)
-            chain = LLMChain(llm=st.session_state.llm, prompt=prompt_template)
-            return chain.run(context=hybrid_context[:4000], question=question).strip()  # Kontext begrenzen
+        results = st.session_state.vector_index.similarity_search(question, k=max_results)
+        if results:
+            return "\n\n".join([res.page_content.strip()[:1000] for res in results])
         else:
-            return "Keine ausreichenden Daten im Kontext, um die Frage zu beantworten."
+            return ""
+    except Exception as e:
+        return f"Fehler bei der Suche in unstrukturierten Daten: {e}"
+
+def hybrid_retrieve_context(question, max_results=5):
+    """
+    Kombiniert strukturierte und unstrukturierte Daten, begrenzt die Ergebnisse und Größe.
+    """
+    try:
+        structured_context = retrieve_structured_context(question, max_results=max_results)
+        unstructured_context = retrieve_unstructured_context(question, max_results=max_results)
+        return f"""
+        Strukturierte Daten:
+        {structured_context[:2000]}
+
+        Unstrukturierte Daten:
+        {unstructured_context[:2000]}
+        """.strip()
+    except Exception as e:
+        return f"Fehler beim Abrufen des hybriden Kontextes: {e}"
+
+def answer_question_with_hybrid_context(question):
+    """
+    Beantwortet eine Frage basierend auf einer hybriden Kontextsuche.
+    """
+    try:
+        context = hybrid_retrieve_context(question)
+        prompt_template = ChatPromptTemplate.from_template("""
+            Beantworte die folgende Frage nur basierend auf den bereitgestellten Daten:
+            
+            Kontext:
+            {context}
+            
+            Frage: {question}
+        """)
+        chain = LLMChain(llm=st.session_state.llm, prompt=prompt_template)
+        return chain.run(context=context, question=question).strip()
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
 
-# Los ziehen
+# Losbuch-Modus: Zufälliges Los ziehen
 def ziehe_random_karte():
+    """
+    Wählt zufällig ein Los aus der JSON-Datei.
+    """
     try:
         los = random.choice(losbuch_data)
         weissagung_hochdeutsch = st.session_state.llm.predict(
@@ -146,10 +157,10 @@ def ziehe_random_karte():
     except Exception as e:
         return {"error": str(e)}
 
-# Streamlit UI
+# Streamlit-UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
 
-# Modus auswählen
+# Auswahl des Modus
 mode = st.selectbox("Wähle einen Modus", ["Allgemeine Fragen", "Losbuch spielen"])
 
 if mode == "Allgemeine Fragen":
