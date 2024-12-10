@@ -48,12 +48,13 @@ def initialize_resources():
         with open(text_file_path, "r", encoding="utf-8") as file:
             raw_text = file.read()
 
-        # Text in Neo4j importieren, falls noch nicht vorhanden
         with driver.session() as session:
-            session.run("""
-            MERGE (doc:Document {name: "extrahierter_text"})
-            ON CREATE SET doc.text = $text
-            """, text=raw_text)
+    result = session.run("MATCH (doc:Document {name: 'extrahierter_text'}) RETURN doc LIMIT 1")
+    if not result.single():
+        session.run("""
+        MERGE (doc:Document {name: "extrahierter_text"})
+        ON CREATE SET doc.text = $text
+        """, text=raw_text)
 
         st.success("Ressourcen erfolgreich initialisiert.")
         return driver, llm, vector_index
