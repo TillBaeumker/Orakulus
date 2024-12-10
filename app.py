@@ -1,4 +1,4 @@
-# %% Imports
+%% Imports
 import streamlit as st
 import random
 import json
@@ -15,8 +15,6 @@ neo4j_uri = st.secrets["NEO4J_URI"]
 neo4j_username = st.secrets["NEO4J_USERNAME"]
 neo4j_password = st.secrets["NEO4J_PASSWORD"]
 
-# Pfad zur unstrukturierten Textdatei
-text_file_path = "extrahierter_text.txt"
 # JSON-Datei mit Losbuch-Daten laden
 with open("data_karten.json", "r", encoding="utf-8") as f:
     losbuch_data = json.load(f)["kartenlosbuch"]
@@ -43,15 +41,6 @@ def initialize_resources():
             embedding_node_property="embedding"
         )
 
-        # Unstrukturierte Textdatei laden
-        with open(text_file_path, "r", encoding="utf-8") as file:
-            raw_text = file.read()
-        # Text in Neo4j importieren, falls noch nicht vorhanden
-        with driver.session() as session:
-            session.run("""
-            MERGE (doc:Document {name: "extrahierter_text"})
-            ON CREATE SET doc.text = $text
-            """, text=raw_text)
         st.success("Ressourcen erfolgreich initialisiert.")
         return driver, llm, vector_index
     except Exception as e:
@@ -87,8 +76,7 @@ def answer_question_from_graph_with_llm(question):
     Beantwortet eine Frage, indem der Kontext aus dem Neo4j-Graph verwendet wird.
     """
     try:
-        graph_context = retrieve_graph_context(question)
-        if graph_context.strip():
+         if graph_context.strip():
             prompt_template = ChatPromptTemplate.from_template("""
                 Du bist ein Experte für das Mainzer Kartenlosbuch und darfst nur Informationen aus dem folgenden Kontext verwenden:
                 
@@ -102,13 +90,12 @@ def answer_question_from_graph_with_llm(question):
                 Antworte präzise und klar, ohne zusätzliche Informationen hinzuzufügen.
             """)
             chain = LLMChain(llm=st.session_state.llm, prompt=prompt_template)
-            answer = chain.run(context=graph_context, question=question)
+                 answer = chain.run(context=graph_context, question=question)
             if "Eingehende Anfragen müssen sich auf Informationen in:" in answer:
                 return "Eingehende Anfragen müssen sich auf Informationen in:\n\nDäumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.\n\nbeziehen."
             return answer.strip()
         else:
             return "Eingehende Anfragen müssen sich auf Informationen in:\n\nDäumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.\n\nbeziehen."
-        
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
 
@@ -130,7 +117,6 @@ def ziehe_random_karte():
         }
     except Exception as e:
         return {"error": str(e)}
-
 # Streamlit-UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
 
