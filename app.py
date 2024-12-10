@@ -107,21 +107,24 @@ def hybrid_retrieve_context(question):
 
 # Frage beantworten
 def answer_question_with_hybrid_context(question):
+    """
+    Beantwortet eine Frage basierend auf einem komprimierten hybriden Kontext.
+    """
     try:
-        hybrid_context = hybrid_retrieve_context(question)
+        hybrid_context = hybrid_retrieve_context(question, max_results=3)  # Max 3 relevante Ergebnisse
         if hybrid_context.strip():
             prompt_template = ChatPromptTemplate.from_template("""
-                Beantworte die folgende Frage basierend auf dem gegebenen Kontext:
+                Beantworte die folgende Frage basierend auf dem gegebenen Kontext (maximal 4000 Zeichen):
                 
                 {context}
-                
+
                 Frage: {question}
-                
+
                 Wenn die Frage nicht beantwortet werden kann, antworte:
                 "Die Antwort kann nicht aus dem gegebenen Kontext abgeleitet werden."
             """)
             chain = LLMChain(llm=st.session_state.llm, prompt=prompt_template)
-            return chain.run(context=hybrid_context, question=question).strip()
+            return chain.run(context=hybrid_context[:4000], question=question).strip()  # Kontext begrenzen
         else:
             return "Keine ausreichenden Daten im Kontext, um die Frage zu beantworten."
     except Exception as e:
