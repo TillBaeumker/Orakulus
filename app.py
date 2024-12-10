@@ -49,8 +49,8 @@ def initialize_resources():
             raw_text = file.read()
 
         with driver.session() as session:
-    result = session.run("MATCH (doc:Document {name: 'extrahierter_text'}) RETURN doc LIMIT 1")
-    if not result.single():
+        result = session.run("MATCH (doc:Document {name: 'extrahierter_text'}) RETURN doc LIMIT 1")
+        if not result.single():
         session.run("""
         MERGE (doc:Document {name: "extrahierter_text"})
         ON CREATE SET doc.text = $text
