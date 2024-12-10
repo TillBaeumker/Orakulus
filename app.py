@@ -22,18 +22,15 @@ text_file_path = "extrahierter_text.txt"
 with open("data_karten.json", "r", encoding="utf-8") as f:
     losbuch_data = json.load(f)["kartenlosbuch"]
 
-# Initialisierung aller Ressourcen (Einmalig)
+# Initialisierung aller Ressourcen
 def initialize_resources():
-    """
-    Initialisiert Neo4j, LLM und Vektorindex.
-    """
     try:
         # Neo4j-Verbindung herstellen
         driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_username, neo4j_password))
         driver.verify_connectivity()
 
         # LLM initialisieren
-        llm = ChatOpenAI(temperature=0, model_name="gpt-4o-mini", openai_api_key=openai_api_key)
+        llm = ChatOpenAI(temperature=0, model_name="gpt-4", openai_api_key=openai_api_key)
 
         # Neo4j Vector Index initialisieren
         vector_index = Neo4jVector.from_existing_graph(
@@ -44,17 +41,13 @@ def initialize_resources():
             embedding_node_property="embedding"
         )
 
-        # Unstrukturierte Textdatei laden
-        with open(text_file_path, "r", encoding="utf-8") as file:
-            raw_text = file.read()
-
         st.success("Ressourcen erfolgreich initialisiert.")
         return driver, llm, vector_index
     except Exception as e:
         st.error(f"Fehler bei der Initialisierung der Ressourcen: {e}")
         st.stop()
 
-# Ressourcen in st.session_state speichern
+# Ressourcen initialisieren und in Session-State speichern
 if "resources_initialized" not in st.session_state:
     with st.spinner("Initialisiere Ressourcen, bitte warten..."):
         neo4j_driver, llm, vector_index = initialize_resources()
@@ -63,59 +56,79 @@ if "resources_initialized" not in st.session_state:
         st.session_state.vector_index = vector_index
         st.session_state.resources_initialized = True
 
-# Allgemeiner Modus: Kontext aus Neo4j abrufen
-def retrieve_graph_context(question):
-    """
-    Sucht relevante Inhalte im Neo4j-Graphen basierend auf der Frage.
-    """
+# Unstrukturierte Daten abrufen
+def retrieve_unstructured_context(question):
     try:
         results = st.session_state.vector_index.similarity_search(question)
-        if results:
-            return "\n\n".join([res.page_content.strip() for res in results])
-        else:
-            return ""
+        return "\n\n".join([res.page_content.strip() for res in results]) if results else ""
     except Exception as e:
-        return f"Fehler bei der Suche im Graphen: {e}"
+        return f"Fehler bei der Suche in unstrukturierten Daten: {e}"
 
-# Allgemeiner Modus: Frage basierend auf dem Graph beantworten
-def answer_question_from_graph_with_llm(question):
-    """
-    Beantwortet eine Frage, indem der Kontext aus dem Neo4j-Graph verwendet wird.
-    """
+# Strukturierte Daten abrufen
+def retrieve_structured_context(question):
     try:
-        graph_context = retrieve_graph_context(question)
-        if graph_context.strip():
+        llm = st.session_state.llm
+        # Entitäten aus der Frage extrahieren
+        entity_extraction_prompt = ChatPromptTemplate.from_template("""
+            Extrahiere alle relevanten Entitäten (Personen, Orte, Organisationen) aus der Frage:
+            {question}
+        """)
+        entity_chain = LLMChain(llm=llm, prompt=entity_extraction_prompt)
+        entities = entity_chain.run(question=question)
+
+        # Abfrage in Neo4j für die extrahierten Entitäten
+        graph_context = ""
+        for entity in entities.split(","):
+            query = f"""
+            CALL db.index.fulltext.queryNodes('entity', '{entity.strip()}') YIELD node
+            MATCH (node)-[r]->(neighbor)
+            RETURN node.id + ' - ' + type(r) + ' -> ' + neighbor.id AS output
+            LIMIT 50
+            """
+            with st.session_state.neo4j_driver.session() as session:
+                results = session.run(query)
+                for record in results:
+                    graph_context += record["output"] + "\n"
+        return graph_context.strip()
+    except Exception as e:
+        return f"Fehler bei der Suche in strukturierten Daten: {e}"
+
+# Hybrid-Kontext erstellen
+def hybrid_retrieve_context(question):
+    structured_context = retrieve_structured_context(question)
+    unstructured_context = retrieve_unstructured_context(question)
+    return f"""
+    Strukturierte Daten:
+    {structured_context}
+
+    Unstrukturierte Daten:
+    {unstructured_context}
+    """.strip()
+
+# Frage beantworten
+def answer_question_with_hybrid_context(question):
+    try:
+        hybrid_context = hybrid_retrieve_context(question)
+        if hybrid_context.strip():
             prompt_template = ChatPromptTemplate.from_template("""
-                Du bist ein Experte für das Mainzer Kartenlosbuch und darfst nur Informationen aus dem folgenden Kontext verwenden:
+                Beantworte die folgende Frage basierend auf dem gegebenen Kontext:
                 
                 {context}
                 
-                Wenn die Frage nicht im Kontext beantwortet werden kann, gib die folgende Antwort zurück:
-                "Eingehende Anfragen müssen sich auf Informationen in:
-
-                Däumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.
-
-                beziehen."
-
                 Frage: {question}
-
-                Antworte präzise und klar, ohne zusätzliche Informationen hinzuzufügen.
+                
+                Wenn die Frage nicht beantwortet werden kann, antworte:
+                "Die Antwort kann nicht aus dem gegebenen Kontext abgeleitet werden."
             """)
             chain = LLMChain(llm=st.session_state.llm, prompt=prompt_template)
-            answer = chain.run(context=graph_context, question=question)
-            if "Eingehende Anfragen müssen sich auf Informationen in:" in answer:
-                return "Eingehende Anfragen müssen sich auf Informationen in:\n\nDäumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.\n\nbeziehen."
-            return answer.strip()
+            return chain.run(context=hybrid_context, question=question).strip()
         else:
-            return "Eingehende Anfragen müssen sich auf Informationen in:\n\nDäumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, und Matthias Standke, vol. 1.\n\nbeziehen."
+            return "Keine ausreichenden Daten im Kontext, um die Frage zu beantworten."
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
 
-# Losbuch-Modus: Zufälliges Los ziehen
+# Los ziehen
 def ziehe_random_karte():
-    """
-    Wählt zufällig ein Los aus der JSON-Datei.
-    """
     try:
         los = random.choice(losbuch_data)
         weissagung_hochdeutsch = st.session_state.llm.predict(
@@ -130,10 +143,10 @@ def ziehe_random_karte():
     except Exception as e:
         return {"error": str(e)}
 
-# Streamlit-UI
+# Streamlit UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
 
-# Auswahl des Modus
+# Modus auswählen
 mode = st.selectbox("Wähle einen Modus", ["Allgemeine Fragen", "Losbuch spielen"])
 
 if mode == "Allgemeine Fragen":
@@ -142,7 +155,7 @@ if mode == "Allgemeine Fragen":
 
     if st.button("Frage stellen"):
         try:
-            answer = answer_question_from_graph_with_llm(question)
+            answer = answer_question_with_hybrid_context(question)
             st.write(f"**Antwort**: {answer}")
         except Exception as e:
             st.error(f"Fehler: {e}")
