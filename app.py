@@ -17,7 +17,6 @@ neo4j_password = st.secrets["NEO4J_PASSWORD"]
 
 # Pfad zur unstrukturierten Textdatei
 text_file_path = "extrahierter_text.txt"
-
 # JSON-Datei mit Losbuch-Daten laden
 with open("data_karten.json", "r", encoding="utf-8") as f:
     losbuch_data = json.load(f)["kartenlosbuch"]
@@ -33,7 +32,7 @@ def initialize_resources():
         driver.verify_connectivity()
 
         # LLM initialisieren
-        llm = ChatOpenAI(temperature=0, model_name="gpt-4", openai_api_key=openai_api_key)
+        llm = ChatOpenAI(temperature=0, model_name="gpt-4o-mini", openai_api_key=openai_api_key)
 
         # Neo4j Vector Index initialisieren
         vector_index = Neo4jVector.from_existing_graph(
@@ -44,6 +43,15 @@ def initialize_resources():
             embedding_node_property="embedding"
         )
 
+        # Unstrukturierte Textdatei laden
+        with open(text_file_path, "r", encoding="utf-8") as file:
+            raw_text = file.read()
+        # Text in Neo4j importieren, falls noch nicht vorhanden
+        with driver.session() as session:
+            session.run("""
+            MERGE (doc:Document {name: "extrahierter_text"})
+            ON CREATE SET doc.text = $text
+            """, text=raw_text)
         st.success("Ressourcen erfolgreich initialisiert.")
         return driver, llm, vector_index
     except Exception as e:
@@ -59,82 +67,48 @@ if "resources_initialized" not in st.session_state:
         st.session_state.vector_index = vector_index
         st.session_state.resources_initialized = True
 
-# Funktionen für den hybriden Ansatz
-def retrieve_structured_context(question, max_results=5):
+# Allgemeiner Modus: Kontext aus Neo4j abrufen
+def retrieve_graph_context(question):
     """
-    Sucht strukturierte Daten im Neo4j-Graphen basierend auf der Frage und begrenzt die Ergebnisse.
-    """
-    try:
-        llm = st.session_state.llm
-        entity_extraction_prompt = ChatPromptTemplate.from_template("""
-            Extrahiere relevante Entitäten (Personen, Orte, Organisationen) aus der Frage:
-            {question}
-        """)
-        entity_chain = LLMChain(llm=llm, prompt=entity_extraction_prompt)
-        entities = entity_chain.run(question=question)
-
-        graph_context = ""
-        for entity in entities.split(",")[:max_results]:  # Maximal `max_results` Entitäten
-            query = f"""
-            CALL db.index.fulltext.queryNodes('entity', '{entity.strip()}') YIELD node
-            MATCH (node)-[r]->(neighbor)
-            RETURN node.id + ' - ' + type(r) + ' -> ' + neighbor.id AS output
-            LIMIT 10
-            """
-            with st.session_state.neo4j_driver.session() as session:
-                results = session.run(query)
-                for record in results:
-                    graph_context += record["output"] + "\n"
-        return graph_context.strip()
-    except Exception as e:
-        return f"Fehler bei der Suche in strukturierten Daten: {e}"
-
-def retrieve_unstructured_context(question, max_results=5):
-    """
-    Sucht unstrukturierte Daten basierend auf der Frage und begrenzt die Ergebnisse.
+    Sucht relevante Inhalte im Neo4j-Graphen basierend auf der Frage.
     """
     try:
-        results = st.session_state.vector_index.similarity_search(question, k=max_results)
+        results = st.session_state.vector_index.similarity_search(question)
         if results:
-            return "\n\n".join([res.page_content.strip()[:1000] for res in results])
+            return "\n\n".join([res.page_content.strip() for res in results])
         else:
             return ""
     except Exception as e:
-        return f"Fehler bei der Suche in unstrukturierten Daten: {e}"
+        return f"Fehler bei der Suche im Graphen: {e}"
 
-def hybrid_retrieve_context(question, max_results=5):
+# Allgemeiner Modus: Frage basierend auf dem Graph beantworten
+def answer_question_from_graph_with_llm(question):
     """
-    Kombiniert strukturierte und unstrukturierte Daten, begrenzt die Ergebnisse und Größe.
+    Beantwortet eine Frage, indem der Kontext aus dem Neo4j-Graph verwendet wird.
     """
     try:
-        structured_context = retrieve_structured_context(question, max_results=max_results)
-        unstructured_context = retrieve_unstructured_context(question, max_results=max_results)
-        return f"""
-        Strukturierte Daten:
-        {structured_context[:2000]}
-
-        Unstrukturierte Daten:
-        {unstructured_context[:2000]}
-        """.strip()
-    except Exception as e:
-        return f"Fehler beim Abrufen des hybriden Kontextes: {e}"
-
-def answer_question_with_hybrid_context(question):
-    """
-    Beantwortet eine Frage basierend auf einer hybriden Kontextsuche.
-    """
-    try:
-        context = hybrid_retrieve_context(question)
-        prompt_template = ChatPromptTemplate.from_template("""
-            Beantworte die folgende Frage nur basierend auf den bereitgestellten Daten:
-            
-            Kontext:
-            {context}
-            
-            Frage: {question}
-        """)
-        chain = LLMChain(llm=st.session_state.llm, prompt=prompt_template)
-        return chain.run(context=context, question=question).strip()
+        graph_context = retrieve_graph_context(question)
+        if graph_context.strip():
+            prompt_template = ChatPromptTemplate.from_template("""
+                Du bist ein Experte für das Mainzer Kartenlosbuch und darfst nur Informationen aus dem folgenden Kontext verwenden:
+                
+                {context}
+                
+                Wenn die Frage nicht im Kontext beantwortet werden kann, gib die folgende Antwort zurück:
+                "Eingehende Anfragen müssen sich auf Informationen in:
+                Däumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.
+                beziehen."
+                Frage: {question}
+                Antworte präzise und klar, ohne zusätzliche Informationen hinzuzufügen.
+            """)
+            chain = LLMChain(llm=st.session_state.llm, prompt=prompt_template)
+            answer = chain.run(context=graph_context, question=question)
+            if "Eingehende Anfragen müssen sich auf Informationen in:" in answer:
+                return "Eingehende Anfragen müssen sich auf Informationen in:\n\nDäumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.\n\nbeziehen."
+            return answer.strip()
+        else:
+            return "Eingehende Anfragen müssen sich auf Informationen in:\n\nDäumer, Matthias, editor. Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht, gedruckt von Johann Schöffer, Mainz um 1510. S. Hirzel Verlag, 2021. Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts, edited by Marco Heiles, Björn Reich, and Matthias Standke, vol. 1.\n\nbeziehen."
+        
     except Exception as e:
         return f"Fehler bei der Beantwortung der Frage: {e}"
 
@@ -169,7 +143,7 @@ if mode == "Allgemeine Fragen":
 
     if st.button("Frage stellen"):
         try:
-            answer = answer_question_with_hybrid_context(question)
+            answer = answer_question_from_graph_with_llm(question)
             st.write(f"**Antwort**: {answer}")
         except Exception as e:
             st.error(f"Fehler: {e}")
