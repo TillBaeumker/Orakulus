@@ -40,10 +40,5 @@ Falls du noch keine OpenAI- oder Neo4j-Zugangsdaten hast:
 - **OpenAI API:** Erstelle einen Account und generiere einen API-Schlüssel auf der [OpenAI Website](https://platform.openai.com/).
 - **Neo4j:** Nutze entweder eine lokale Installation oder erstelle ein kostenloses Konto bei [Neo4j Aura](https://neo4j.com/cloud/aura/).
 
-### Fehlerbehebung
-- **Fehlende `.streamlit/secrets.toml`:** Stelle sicher, dass die Datei korrekt erstellt wurde und alle Zugangsdaten enthält.
-- **Neo4j-Verbindungsfehler:** Überprüfe, ob Neo4j läuft und der Bolt-Port erreichbar ist.
-- **OpenAI API-Fehler:** Stelle sicher, dass dein OpenAI API-Schlüssel gültig ist und die Nutzungslimits nicht überschritten wurden.
-
 ## Lizenz
 Dieses Projekt steht unter der MIT-Lizenz. Weitere Informationen findest du in der Datei `LICENSE`.
