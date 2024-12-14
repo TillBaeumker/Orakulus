@@ -41,7 +41,7 @@ Erstelle eine Datei `.streamlit/secrets.toml` im Projektverzeichnis mit folgende
  
 OPENAI_API_KEY = "Dein_OpenAI_API_Key"  
 NEO4J_URI = "neo4j+s://Dein_Neo4j_Host"  
-NEO4J_USER = "Dein_Neo4j_Benutzername"  
+NEO4J_USERNAME = "Dein_Neo4j_Benutzername"  
 NEO4J_PASSWORD = "Dein_Neo4j_Passwort"  
 
 > Hinweis: Bitte füge deine eigenen API-Keys und Zugangsdaten ein.
