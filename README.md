@@ -55,7 +55,7 @@ streamlit run app.py
 
 ### Eigene OpenAI- und Neo4j-Zugangsdaten verwenden
 Falls du noch keine OpenAI- oder Neo4j-Zugangsdaten hast:
-- **OpenAI API:** Erstelle einen Account und generiere einen API-Schlüssel auf der [OpenAI Website](https://platform.openai.com/).
+- **OpenAI API:** Erstelle einen Account und generiere einen API-Schlüssel unter OpenAI API. Stelle sicher, dass das Modell gpt-4.0-mini verfügbar ist, da der Code dieses Modell nutzt.
 - **Neo4j:** Nutze entweder eine lokale Installation oder erstelle ein kostenloses Konto bei [Neo4j Aura](https://neo4j.com/cloud/aura/).
 - Wenn du einen eigenen Neo4j-Graphen nutzt, beachte bitte, dass die Inhalte deines Graphen nicht mit denen der Webversion übereinstimmen. Die Webversion verwendet einen speziell erstellten Graphen, der Informationen aus dem Mainzer Kartenlosbuch (1510) enthält. Um die Funktionalitäten des Losbuchmodus und die spezifischen Inhalte der Webversion zu reproduzieren, müssen die Daten des Mainzer Kartenlosbuchs in deinem eigenen Graphen vorhanden sein.
 
