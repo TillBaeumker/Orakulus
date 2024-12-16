@@ -4,7 +4,7 @@ Orakulus ist ein Chatbot, der eine innovative Möglichkeit bietet, Inhalte in de
 
 Als Grundlage für Orakulus dient die Edition des Mainzer Kartenlosbuches, das 1510 von Johann Schöffer gedruckt und von Matthias Däumer editiert wurde. 
 
-Der entwickelte Prototyp ist als "Proof of Concept" zu verstehen, der zeigt, wie Chatbots in der digitalen Editionswissenschaft eingesetzt werden können, um historische Inhalte interaktiv und zugänglich zu machen. Ausführliche Informationen zu Orakulus, einschließlich der technischen Umsetzung und der Evaluationsergebnisse, können in dieser Arbeit nachgelesen werden.
+Der entwickelte Prototyp ist als "Proof of Concept" zu verstehen, der zeigt, wie Chatbots in der digitalen Editionswissenschaft eingesetzt werden können, um historische Inhalte interaktiv und zugänglich zu machen. Ausführliche Informationen zu Orakulus, einschließlich der technischen Umsetzung und der Evaluationsergebnisse, können im paper nachgelesen werden.
 
 Der Chatbot bietet zwei Hauptmodi:
 
