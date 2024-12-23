@@ -1,6 +1,6 @@
-# Orakulus: Interaktive Wissensvermittlung mit einem KI-gestützten Chatbot
+# Orakulus: Interaktive Wissensvermittlung in der digitalen Editionswissenschaft mit einem KI-gestützten Chatbot
 
-Orakulus ist ein Chatbot, der eine innovative Möglichkeit bietet, Inhalte in der digitalen Editionswissenschaft interaktiv zugänglich zu machen. Der Chatbot basiert auf einer Kombination aus Neo4j, das Wissensgraphen für die Datenstrukturierung und Abfrage nutzt, und OpenAI, das die natürliche Sprachverarbeitung übernimmt. Dadurch können Benutzer:innen auf intuitive Weise mit den Inhalten interagieren.
+Orakulus ist ein Chatbot, der eine Möglichkeit bietet, Inhalte in der digitalen Editionswissenschaft interaktiv zugänglich zu machen. Der Chatbot basiert auf einer Kombination aus Neo4j, das Wissensgraphen für die Datenstrukturierung und Abfrage nutzt, und OpenAI, das die natürliche Sprachverarbeitung übernimmt. Dadurch können Benutzer:innen auf intuitive Weise mit den Inhalten interagieren.
 
 Als Grundlage für Orakulus dient die Edition des Mainzer Kartenlosbuches, das 1510 von Johann Schöffer gedruckt und von Matthias Däumer editiert wurde. 
 
