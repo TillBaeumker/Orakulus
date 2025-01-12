@@ -121,6 +121,8 @@ def ziehe_random_karte():
 
 # Streamlit-UI
 st.title("🔮 Das Mainzer Kartenlosbuch")
+st.subheader("Dieser Bot basiert ausschließlich auf Inhalten aus der Edition von Matthias Däumer: 'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht' (2021).")
+
 
 # Auswahl des Modus
 mode = st.selectbox("Wähle einen Modus", ["Allgemeine Fragen", "Losbuch spielen"])
