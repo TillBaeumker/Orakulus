@@ -122,7 +122,7 @@ def ziehe_random_karte():
 # Streamlit-UI
 st.markdown("## 🔮 Das Mainzer Kartenlosbuch")  # Kleinere Hauptüberschrift
 st.markdown(
-    "#### Dieser Bot basiert ausschließlich auf Inhalten aus der Edition von Matthias Däumer: 'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht' (2021)
+    "#### Dieser Bot basiert ausschließlich auf Inhalten aus der Edition von Matthias Däumer: 'Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht' (2021)"
 ) 
 
 
