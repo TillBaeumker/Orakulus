@@ -63,7 +63,7 @@ Falls du noch keine OpenAI- oder Neo4j-Zugangsdaten hast:
 - **Neo4j:** Nutze entweder eine lokale Installation oder erstelle ein kostenloses Konto bei [Neo4j Aura](https://neo4j.com/cloud/aura/).
 - Wenn du einen eigenen Neo4j-Graphen nutzt, beachte bitte, dass die Inhalte deines Graphen nicht mit denen der Webversion übereinstimmen. Die Webversion nutzt einen speziell erstellten Graphen mit Informationen aus der Edition des Mainzer Kartenlosbuchs (1510) von Matthias Däumer (2021). Um die Funktionalitäten des Losbuchmodus und die spezifischen Inhalte der Webversion zu reproduzieren, müssen die Daten des Mainzer Kartenlosbuchs in deinem eigenen Graphen vorhanden sein.
 
-# Literatur:
+### Literatur:
 Däumer, Matthias (2021). „Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht“. In: Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts. Hrsg. von Marco Heiles, Björn Reich und Matthias Standke. Bd. 1, S. 87–122
 
 ## Lizenz
