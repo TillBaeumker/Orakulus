@@ -2,7 +2,7 @@
 
 Orakulus ist ein Chatbot, der eine Möglichkeit bietet, Inhalte in der digitalen Editionswissenschaft interaktiv zugänglich zu machen. Der Chatbot basiert auf einer Kombination aus Neo4j, das Wissensgraphen für die Datenstrukturierung und Abfrage nutzt, und OpenAI, das die natürliche Sprachverarbeitung übernimmt. Dadurch können Benutzer:innen auf intuitive Weise mit den Inhalten interagieren.
 
-Als Grundlage für Orakulus dient die Edition des Mainzer Kartenlosbuches, das 1510 von Johann Schöffer gedruckt und von Matthias Däumer editiert wurde. 
+Als Grundlage für Orakulus dient die Edition des Mainzer Kartenlosbuches, das 1510 von Johann Schöffer gedruckt und von Matthias Däumer (2021) editiert wurde. 
 
 Der entwickelte Prototyp ist als "Proof of Concept" zu verstehen, der zeigt, wie Chatbots in der digitalen Editionswissenschaft eingesetzt werden können, um historische Inhalte interaktiv und zugänglich zu machen. Ausführliche Informationen zu Orakulus, einschließlich der technischen Umsetzung und der Evaluationsergebnisse, können im Paper nachgelesen werden.
 
@@ -61,7 +61,10 @@ streamlit run app.py
 Falls du noch keine OpenAI- oder Neo4j-Zugangsdaten hast:
 - **OpenAI API:** Erstelle einen Account und generiere einen API-Schlüssel unter OpenAI API. Stelle sicher, dass das Modell gpt-4.0-mini verfügbar ist, da der Code dieses Modell nutzt.
 - **Neo4j:** Nutze entweder eine lokale Installation oder erstelle ein kostenloses Konto bei [Neo4j Aura](https://neo4j.com/cloud/aura/).
-- Wenn du einen eigenen Neo4j-Graphen nutzt, beachte bitte, dass die Inhalte deines Graphen nicht mit denen der Webversion übereinstimmen. Die Webversion verwendet einen speziell erstellten Graphen, der Informationen aus dem Mainzer Kartenlosbuch (1510) enthält. Um die Funktionalitäten des Losbuchmodus und die spezifischen Inhalte der Webversion zu reproduzieren, müssen die Daten des Mainzer Kartenlosbuchs in deinem eigenen Graphen vorhanden sein.
+- Wenn du einen eigenen Neo4j-Graphen nutzt, beachte bitte, dass die Inhalte deines Graphen nicht mit denen der Webversion übereinstimmen. Die Webversion nutzt einen speziell erstellten Graphen mit Informationen aus der Edition des Mainzer Kartenlosbuchs (1510) von Matthias Däumer (2021). Um die Funktionalitäten des Losbuchmodus und die spezifischen Inhalte der Webversion zu reproduzieren, müssen die Daten des Mainzer Kartenlosbuchs in deinem eigenen Graphen vorhanden sein.
+
+# Literatur:
+Däumer, Matthias (2021). „Mainzer Kartenlosbuch: Eyn losz buch ausz der karten gemacht“. In: Gedruckte deutsche Losbücher des 15. und 16. Jahrhunderts. Hrsg. von Marco Heiles, Björn Reich und Matthias Standke. Bd. 1, S. 87–122
 
 ## Lizenz
 Dieses Projekt steht unter der MIT-Lizenz. Weitere Informationen findest du in der Datei `LICENSE`.
