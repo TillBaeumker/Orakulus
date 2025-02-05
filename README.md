@@ -1,3 +1,5 @@
+![Orakulus Chatbot](orakulus_chatbot.png)
+
 # Orakulus: Interaktive Wissensvermittlung in der digitalen Editionswissenschaft mit einem KI-gestützten Chatbot
 
 Orakulus ist ein Chatbot, der eine Möglichkeit bietet, Inhalte in der digitalen Editionswissenschaft interaktiv zugänglich zu machen. Der Chatbot basiert auf einer Kombination aus Neo4j, das Wissensgraphen für die Datenstrukturierung und Abfrage nutzt, und OpenAI, das die natürliche Sprachverarbeitung übernimmt. Dadurch können Benutzer:innen auf intuitive Weise mit den Inhalten interagieren.
