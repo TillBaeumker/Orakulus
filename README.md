@@ -1,4 +1,4 @@
-![Orakulus Chatbot](orakulus_chatbot.png)
+![Orakulus Chatbot(Erstellt mit Dall-E](orakulus_chatbot.png)
 
 # Orakulus: Interaktive Wissensvermittlung in der digitalen Editionswissenschaft mit einem KI-gestützten Chatbot
 
