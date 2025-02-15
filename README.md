@@ -16,10 +16,10 @@ Orakulus versteht sich als Prototyp: Er zeigt Potenziale eines KI-gestützten Ch
 
 ## Online-Nutzung
 
-Der Chatbot ist online verfügbar unter:  [**Orakulus**](https://orakulusmainz.streamlit.app)
+Der Chatbot ist online verfügbar unter und kann direkt ohne Installation genutzt werden:  [**Orakulus**](https://orakulusmainz.streamlit.app)
 
 ## Lokale Installation
-> Hinweis: Eine lokale Installation ist nicht erforderlich, wenn du den Chatbot nur über die Streamlit Community Cloud nutzen möchtest. Die folgenden Schritte beschreiben die **optionale** lokale Installation.
+> Hinweis: Die lokale Installation ist optional. Falls du Orakulus direkt nutzen möchtest, kannst du die Webversion aufrufen.
 
 ### Voraussetzungen
 Bevor du startest, stelle sicher, dass folgende Anforderungen erfüllt sind:
@@ -27,6 +27,7 @@ Bevor du startest, stelle sicher, dass folgende Anforderungen erfüllt sind:
 2. **pip** (Python-Paketmanager) ist installiert.
 3. **Neo4j** ist verfügbar (lokal oder in der Cloud). [Neo4j herunterladen](https://neo4j.com/download-center/) oder [Neo4j Aura nutzen](https://neo4j.com/cloud/aura/).
 4. Du hast Zugriff auf **OpenAI API-** und **Neo4j-Zugangsdaten** (eigenen Account erstellen).
+5. Ein eigener Wissensgraph muss erstellt werden, um die Abfragen zu ermöglichen.
 
 ### Installation
 ### Repository klonen
@@ -39,9 +40,26 @@ cd Orakulus
 ```bash
 pip install -r requirements.txt  
 ```
+### Wissensgraph erstellen (Preprocessing)
+
+Um die lokale Anwendung zu nutzen, muss ein eigener Wissensgraph erstellt werden.
+
+1. **Text bereitstellen**  
+   Lege die zu verarbeitende PDF-Datei im Projektverzeichnis ab und passe den Dateipfad in `preprocessing.py` an:  
+
+   pdf_path = "Dein_Text.pdf"
+
+2. **Preprocessing starten**
+```bash
+python preprocessing.py
+```
+
+> Hinweise :
+> Für identische Ergebnisse nutze den angegebenen Text aus der Literatur.
+> Inhalte für den Losbuchmodus sind bereits im Repository enthalten.
 
 ### OpenAI- und Neo4j-Zugangsdaten hinzufügen
-Füge in die Datei "secrets.toml" im Ordner ".streamlit" im Projektverzeichnis den folgenden Inhalt ein:
+Erstelle (falls noch nicht vorhanden) die Datei "secrets.toml" im Ordner ".streamlit" und füge folgenden Inhalt hinzu:
  
 OPENAI_API_KEY = "Dein_OpenAI_API_Key"  
 NEO4J_URI = "neo4j+s://Dein_Neo4j_Host"  
