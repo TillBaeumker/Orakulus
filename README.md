@@ -4,7 +4,7 @@
 
 Orakulus demonstriert, wie ein Chatbot auf Basis von Wissensgraphen (\textit{Neo4j}) und KI (\textit{GPT 4-o-mini}) historische Inhalte interaktiv zugänglich machen kann. Eine Edition des 1510 von Johann Schöffer gedruckten *Mainzer Kartenlosbuches*, die 2021 von Matthias Däumer ediert wurde, dient dabei als Datenbasis.
 
-## Hauptfunktionen
+## Funktionen
 
 - **Allgemeiner Fragenmodus**  
   Hier können Nutzer:innen natürlichsprachige Anfragen zur Edition stellen. Orakulus greift auf den Wissensgraphen in \textit{Neo4j} zu und liefert kontextbezogene Antworten.
