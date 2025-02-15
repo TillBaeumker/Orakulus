@@ -1,20 +1,18 @@
 ![Orakulus Chatbot(Erstellt mit Dall-E)](orakulus_chatbot.png)
 
-# Orakulus: Interaktive Wissensvermittlung in der digitalen Editionswissenschaft mit einem KI-gestützten Chatbot
+# Orakulus: Ein Chatbot-Prototyp für die digitale Editionswissenschaft
 
-Orakulus ist ein Chatbot, der eine Möglichkeit bietet, Inhalte in der digitalen Editionswissenschaft interaktiv zugänglich zu machen. Der Chatbot basiert auf einer Kombination aus Neo4j, das Wissensgraphen für die Datenstrukturierung und Abfrage nutzt, und OpenAI, das die natürliche Sprachverarbeitung übernimmt. Dadurch können Benutzer:innen auf intuitive Weise mit den Inhalten interagieren.
+Orakulus demonstriert, wie ein Chatbot auf Basis von Wissensgraphen (\textit{Neo4j}) und KI (\textit{GPT 4-o-mini}) historische Inhalte interaktiv zugänglich machen kann. Eine Edition des 1510 von Johann Schöffer gedruckten *Mainzer Kartenlosbuches*, die 2021 von Matthias Däumer ediert wurde, dient dabei als Datenbasis.
 
-Als Grundlage für Orakulus dient die Edition des Mainzer Kartenlosbuches, das 1510 von Johann Schöffer gedruckt und von Matthias Däumer (2021) editiert wurde. 
+## Hauptfunktionen
 
-Der entwickelte Prototyp ist als "Proof of Concept" zu verstehen, der zeigt, wie Chatbots in der digitalen Editionswissenschaft eingesetzt werden können, um historische Inhalte interaktiv und zugänglich zu machen. Ausführliche Informationen zu Orakulus, einschließlich der technischen Umsetzung und der Evaluationsergebnisse, können im [Paper](./Paper_EinZugangZuEditionen.pdf) nachgelesen werden.
+- **Allgemeiner Fragenmodus**  
+  Hier können Nutzer:innen semantische Anfragen zur Edition stellen. Orakulus greift auf den Wissensgraphen in \textit{Neo4j} zu und liefert kontextbezogene Antworten.
 
-Der Chatbot bietet zwei Hauptmodi:
+- **Losbuchmodus**  
+  Dieser Modus ist inspiriert vom historischen Kartenlosbuch: Ein zufälliges Los wird gezogen und die zugehörige Weissagung wird angezeigt. Dies ermöglicht eine spielerische Erkundung der Texttradition.
 
-Allgemeiner Fragenmodus:
-In diesem Modus können Benutzer semantische Anfragen zur digitalen Edition stellen. Orakulus nutzt den Neo4j-Wissensgraphen, um präzise Informationen zu den Inhalten der Edition zu liefern. Dies ermöglicht eine interaktive Erforschung der Themen, die im Zusammenhang mit dem Mainzer Kartenlosbuch (1510) stehen, und bietet eine detaillierte, kontextbezogene Antwort auf spezifische Fragen.
-
-Losbuchmodus:
-Dieser Modus ist inspiriert von der ursprünglichen Funktion des Mainzer Kartenlosbuchs als Weissagungsinstrument. Benutzer können in einer interaktiven Sitzung ein Los ziehen, und der Chatbot interpretiert dieses basierend auf den historischen Texten und Bedeutungen. Dies bietet eine Funktionen des Kartenlosbuchs auf spielerische Weise zu erleben.
+Orakulus versteht sich als „Proof of Concept“: Er zeigt Potenziale eines KI-gestützten Chatbots in der digitalen Editionswissenschaft. Weitere technische Details und Evaluationsergebnisse finden sich im [Paper](./Paper_EinZugangZuEditionen.pdf).
 
 ## Online-Nutzung
 
