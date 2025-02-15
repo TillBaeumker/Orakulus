@@ -19,7 +19,7 @@ Orakulus versteht sich als Prototyp: Er zeigt Potenziale eines KI-gestützten Ch
 Der Chatbot ist online verfügbar unter:  [**Orakulus**](https://orakulusmainz.streamlit.app)
 
 ## Lokale Installation
-**Hinweis:** Eine lokale Installation ist nicht erforderlich, wenn du den Chatbot nur über die Streamlit Community Cloud nutzen möchtest. Die folgenden Schritte beschreiben die **optionale** lokale Installation.
+> Hinweis: Eine lokale Installation ist nicht erforderlich, wenn du den Chatbot nur über die Streamlit Community Cloud nutzen möchtest. Die folgenden Schritte beschreiben die **optionale** lokale Installation.
 
 ### Voraussetzungen
 Bevor du startest, stelle sicher, dass folgende Anforderungen erfüllt sind:
