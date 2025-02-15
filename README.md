@@ -16,7 +16,7 @@ Orakulus versteht sich als Prototyp: Er zeigt Potenziale eines KI-gestützten Ch
 
 ## Online-Nutzung
 
-Der Chatbot ist online verfügbar unter und kann direkt ohne Installation genutzt werden:  [**Orakulus**](https://orakulusmainz.streamlit.app)
+Der Chatbot ist online verfügbar und kann direkt ohne Installation genutzt werden:  [**Orakulus**](https://orakulusmainz.streamlit.app)
 
 ## Lokale Installation
 > Hinweis: Die lokale Installation ist optional. Falls du Orakulus direkt nutzen möchtest, kannst du die Webversion aufrufen.
@@ -30,45 +30,52 @@ Bevor du startest, stelle sicher, dass folgende Anforderungen erfüllt sind:
 5. Ein eigener Wissensgraph muss erstellt werden, um die Abfragen zu ermöglichen.
 
 ### Installation
-### Repository klonen
+
+#### Repository klonen
 ```bash
 git clone https://github.com/TillBaeumker/Orakulus.git  
 cd Orakulus  
 ```
 
-### Abhängigkeiten installieren
+#### Abhängigkeiten installieren
 ```bash
 pip install -r requirements.txt  
 ```
+
 ### Wissensgraph erstellen (Preprocessing)
 
 Um die lokale Anwendung zu nutzen, muss ein eigener Wissensgraph erstellt werden.
 
 1. **Text bereitstellen**  
    Lege die zu verarbeitende PDF-Datei im Projektverzeichnis ab und passe den Dateipfad in `preprocessing.py` an:  
-
+   ```python
    pdf_path = "Dein_Text.pdf"
+   ```
 
 2. **Preprocessing starten**
 ```bash
 python preprocessing.py
 ```
 
-> Hinweise :
-> Für identische Ergebnisse nutze den angegebenen Text aus der Literatur.
-> Inhalte für den Losbuchmodus sind bereits im Repository enthalten.
+> Hinweise:
+> - Für identische Ergebnisse nutze den angegebenen Text aus der Literatur.
+> - Inhalte für den Losbuchmodus sind bereits im Repository enthalten.
 
 ### OpenAI- und Neo4j-Zugangsdaten hinzufügen
 Erstelle (falls noch nicht vorhanden) die Datei "secrets.toml" im Ordner ".streamlit" und füge folgenden Inhalt hinzu:
  
+```ini
 OPENAI_API_KEY = "Dein_OpenAI_API_Key"  
 NEO4J_URI = "neo4j+s://Dein_Neo4j_Host"  
 NEO4J_USERNAME = "Dein_Neo4j_Benutzername"  
 NEO4J_PASSWORD = "Dein_Neo4j_Passwort"  
+```
 
 > Hinweis: Bitte füge deine eigenen API-Keys und Zugangsdaten ein.
 
 ### Anwendung ausführen
+
+Starte die Anwendung mit folgendem Befehl im Terminal:
 ```bash
 streamlit run app.py  
 ```
@@ -86,3 +93,4 @@ Däumer, Matthias (2021). „Mainzer Kartenlosbuch: Eyn losz buch ausz der karte
 
 ## Lizenz
 Dieses Projekt steht unter der MIT-Lizenz. Weitere Informationen findest du in der Datei `LICENSE`.
+
