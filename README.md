@@ -7,7 +7,7 @@ Orakulus demonstriert, wie ein Chatbot auf Basis von Wissensgraphen (Neo4j) und 
 ## Funktionen
 
 - **Allgemeiner Fragenmodus**  
-  Hier können Nutzer:innen natürlichsprachige Anfragen zur Edition stellen. Orakulus greift auf den Wissensgraphen in \textit{Neo4j} zu und liefert kontextbezogene Antworten.
+  Hier können Nutzer:innen natürlichsprachige Anfragen zur Edition stellen. Orakulus greift auf den Wissensgraphen in Neo4j zu und liefert kontextbezogene Antworten.
 
 - **Losbuchmodus**  
   Dieser Modus ist inspiriert vom historischen Kartenlosbuch: Ein zufälliges Los wird gezogen und die zugehörige Weissagung wird angezeigt. 
