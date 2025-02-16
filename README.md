@@ -47,10 +47,10 @@ pip install -r requirements.txt
 Um die lokale Anwendung zu nutzen, muss ein eigener Wissensgraph erstellt werden.
 
 1. **Text bereitstellen**  
-   Lege die zu verarbeitende PDF-Datei im Projektverzeichnis ab und passe den Dateipfad in `preprocessing.py` an:  
-   ```python
-   pdf_path = "Dein_Text.pdf"
-   ```
+Lege die zu verarbeitende PDF-Datei im Projektverzeichnis ab und passe den Dateipfad in `preprocessing.py` an:  
+```python
+pdf_path = "Dein_Text.pdf"
+```
 
 2. **Preprocessing starten**
 ```bash
@@ -62,7 +62,7 @@ python preprocessing.py
 > - Inhalte für den Losbuchmodus sind bereits im Repository enthalten.
 
 ### OpenAI- und Neo4j-Zugangsdaten hinzufügen
-Erstelle (falls noch nicht vorhanden) die Datei "secrets.toml" im Ordner ".streamlit" und füge folgenden Inhalt hinzu:
+Erstelle (falls noch nicht vorhanden) die Datei `secrets.toml` im Ordner `.streamlit` und füge folgenden Inhalt hinzu:
  
 ```ini
 OPENAI_API_KEY = "Dein_OpenAI_API_Key"  
