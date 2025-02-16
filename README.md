@@ -60,6 +60,8 @@ python preprocessing.py
 > Hinweise:
 > - Für identische Ergebnisse nutze den angegebenen Text aus der Literatur.
 > - Inhalte für den Losbuchmodus sind bereits im Repository enthalten.
+> - Weitere Anpassungen in der Datei `preprocessing.py` sind notwendig, um eigene Texte zu verarbeiten. Diese Datei bildet den Stand für die Erstellung der Daten in diesem  Repository ab. Auch wenn derselbe Text genutzt wird, sollten Inhalte der Datei angepasst werden, zum Beispiel wäre eine erneute Extraktion der Bilder nicht mehr nötig, da diese bereits im Repository abgelegt sind.
+> - Änderungen an der Vorverarbeitung wirken sich direkt auf die generierten Daten aus und sollten konsistent mit der restlichen Anwendung sein.
 
 ### OpenAI- und Neo4j-Zugangsdaten hinzufügen
 Erstelle (falls noch nicht vorhanden) die Datei `secrets.toml` im Ordner `.streamlit` und füge folgenden Inhalt hinzu:
