@@ -52,7 +52,7 @@ Lege die zu verarbeitende PDF-Datei im Projektverzeichnis ab und passe den Datei
 pdf_path = "Dein_Text.pdf"
 ```
 
-2. **Preprocessing starten**
+2. **Preprocessing starten (im Terminal)**
 ```bash
 python preprocessing.py
 ```
