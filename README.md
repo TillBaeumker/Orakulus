@@ -2,7 +2,7 @@
 
 # Orakulus: Ein Chatbot-Prototyp für die digitale Editionswissenschaft
 
-Orakulus demonstriert, wie ein Chatbot auf Basis von Wissensgraphen (Neo4j) und KI (GPT 4-o-mini) historische Inhalte interaktiv zugänglich machen kann. Eine Edition des 1510 von Johann Schöffer gedruckten *Mainzer Kartenlosbuches*, die 2021 von Matthias Däumer ediert wurde, dient dabei als Datenbasis.
+Orakulus ist ein Chatbot, der historische Inhalte interaktiv zugänglich macht. Er nutzt einen Wissensgraphen (Neo4j) und KI (GPT-4o-mini). Als Datenbasis dient eine Edition des Mainzer Kartenlosbuches, das 1510 von Johann Schöffer gedruckt und 2021 von Matthias Däumer ediert wurde.
 
 ## Funktionen
 
