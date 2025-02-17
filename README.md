@@ -12,7 +12,7 @@ Orakulus ist ein Chatbot, der historische Inhalte interaktiv zugänglich macht. 
 - **Losbuchmodus**  
   Dieser Modus ist inspiriert vom historischen Kartenlosbuch: Ein zufälliges Los wird gezogen und die zugehörige Weissagung wird angezeigt. 
 
-Orakulus versteht sich als Prototyp: Er zeigt Potenziale eines KI-gestützten Chatbots in der digitalen Editionswissenschaft. Weitere technische Details und Evaluationsergebnisse finden sich im [Paper](./Paper_EinZugangZuEditionen.pdf).
+Orakulus versteht sich als Prototyp: Er zeigt Potenziale eines KI-gestützten Chatbots in der Editionswissenschaft. Weitere technische Details und Evaluationsergebnisse finden sich im [Paper](./Paper_EinZugangZuEditionen.pdf).
 
 ## Online-Nutzung
 
