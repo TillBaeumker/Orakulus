@@ -130,7 +130,7 @@ st.markdown(
 mode = st.selectbox("Wähle einen Modus", ["Allgemeine Fragen", "Losbuch spielen"])
 
 if mode == "Allgemeine Fragen":
-    st.subheader("Stelle eine Frage zu den Weissagungen:")
+    st.subheader("Stelle eine Frage zur Edition des Mainzer Kartenlosbuchs:")
     question = st.text_input("Frage eingeben")
 
     if st.button("Frage stellen"):
