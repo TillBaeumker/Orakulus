@@ -5,3 +5,4 @@ langchain-openai==0.2.8
 langchain-community==0.3.7
 neo4j==5.26.0
 Pillow>=9.0.0
+requests==2.32.3
