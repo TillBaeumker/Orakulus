@@ -9,18 +9,6 @@ from langchain.chains import LLMChain
 from langchain_community.vectorstores import Neo4jVector
 from langchain_openai import OpenAIEmbeddings
 
-import subprocess
-
-# Überprüfe alle installierten Python-Pakete
-def check_installed_packages():
-    installed_packages = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])
-    installed_packages = installed_packages.decode("utf-8")
-    return installed_packages
-
-# Zeige die installierten Pakete in der Streamlit-App an
-st.text("Installierte Pakete:")
-st.text(check_installed_packages())
-
 # OpenAI- und Neo4j-Details aus Streamlit Secrets laden
 openai_api_key = st.secrets["OPENAI_API_KEY"]
 neo4j_uri = st.secrets["NEO4J_URI"]
